@@ -34,13 +34,13 @@ class SequentialMenu final : public Menu {
     }
 
     /**
-   * @brief Handler function to process the collected inputs.
-   */
+      * @brief Handler function to process the collected inputs.
+      */
     std::function<void(const std::vector<std::string>&)> handler;
 
   public:
     /**
-     * @brief Adds a collection stage to the menu
+     * @brief Adds an input collection stage to the menu
      *
      * @param prompt Prompt to be shown to user
      */
@@ -53,7 +53,7 @@ class SequentialMenu final : public Menu {
      * @brief Displays the menu and sequentially asks for inputs.
      */
     void display() override {
-      std::cout << "\n\033[1;33m[" << menuName << "]\033[0m\n";
+      std::cout << "\033[1;33m[" << menuName << "]\033[0m\n";
       // Clear input buffer
       std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
       // Loop through the input actions and display prompts
@@ -64,13 +64,16 @@ class SequentialMenu final : public Menu {
       // After collecting inputs, call the handler function
       if (handler) { handler(collectedInputs); }
 
-      waitForAnyKey(false);
+      // waitForAnyKey(false);
       // Go one menu up
       parentMenu->display();
     }
 
     /**
      * @brief Set the handler function to process collected inputs.
+     *
+     * The handler function is called when input collection is complete to handle said input.
+     * A vector of input strings is passed as argument.
      */
     void setHandler(std::function<void(const std::vector<std::string>&)> new_handler) {
       handler = std::move(new_handler);
@@ -80,9 +83,8 @@ class SequentialMenu final : public Menu {
     // ╔════════════════════════════════════════╗
     // ║             Constructors               ║
     // ╚════════════════════════════════════════╝
-
-    explicit SequentialMenu(const std::string& menu_name)
-      : Menu(menu_name) {
+    explicit SequentialMenu(const std::string& menu_name, const std::shared_ptr<Menu>& parent_menu = nullptr)
+      : Menu(menu_name, parent_menu) {
     }
 };
 

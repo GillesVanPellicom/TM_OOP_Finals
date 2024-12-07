@@ -33,7 +33,13 @@ class Tire : public Product {
          const std::uint32_t width,
          const std::uint32_t height,
          const char speed_index)
-      : Product(std::move(name), std::move(manufacturer), diameter, stock_count, price_individual, price_business),
+      : Product(std::move(name),
+                std::move(manufacturer),
+                diameter,
+                TIRE,
+                stock_count,
+                price_individual,
+                price_business),
         width(width),
         height(height),
         speedIndex(speed_index) {

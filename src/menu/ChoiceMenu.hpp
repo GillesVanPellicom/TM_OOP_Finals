@@ -1,14 +1,16 @@
 #ifndef CHOICE_MENU_H
 #define CHOICE_MENU_H
 
-#include "Menu.hpp"
 #include <memory>
+
+#include "Menu.hpp"
 
 class ChoiceMenu final : public Menu {
   private:
     std::map<int, MenuEntry> options;
     int optionCount = 1;
     bool shouldExit = false;
+    std::string suffixText = "";
 
   public:
     // ╔════════════════════════════════════════╗
@@ -27,7 +29,7 @@ class ChoiceMenu final : public Menu {
     // ╚════════════════════════════════════════╝
 
     /**
-     * @brief adds an option which triggers a function
+     * @brief adds a menu option which triggers a function
      * @param description description of the option
      * @param action function to be called
      */
@@ -36,19 +38,20 @@ class ChoiceMenu final : public Menu {
     }
 
     /**
-     * @brief adds an option which opens a submenu
+     * @brief adds a menu option which opens a sub-menu
      * @param description description of the option
      * @param submenu menu to be opened
      */
-    void addOption(std::string description, Menu& submenu) {
+    void addOption(std::string description, const std::shared_ptr<Menu>& submenu) {
       options[optionCount++] = {
-        std::move(description), [&submenu, this]() {
+        std::move(description), [submenu, this]() {
           const auto parent = std::shared_ptr<Menu>(
             this,
             [](Menu*) {
-            }); // Preventing ownership transfer
-          submenu.setParentMenu(parent);
-          submenu.display();
+              // Prevent ownership transfer
+            });
+          submenu->setParentMenu(parent);
+          submenu->display();
         }
       };
     }
@@ -60,7 +63,7 @@ class ChoiceMenu final : public Menu {
     [[noreturn]] void display() override {
       int choice;
       while (true) {
-        std::cout << "\n\033[1;33m[" << menuName << "]\033[0m\nChoose an option:\n";
+        std::cout << "\033[1;33m[" << menuName << "]\033[0m" << suffixText << "\nChoose an option:\n";
         for (const auto& [i, entry] : options) {
           std::cout << "\t\033[1;33m" << i << ".\033[0m " << entry.description << "\n";
         }
@@ -94,6 +97,15 @@ class ChoiceMenu final : public Menu {
         }
         waitForAnyKey(true);
       }
+    }
+
+  // suffixText
+    [[nodiscard]] std::string getSuffixText() const {
+      return suffixText;
+    }
+    void setSuffixText(std::string suffix_text) {
+      suffix_text = "\n" + suffix_text + "\n";
+      suffixText = std::move(suffix_text);
     }
 };
 

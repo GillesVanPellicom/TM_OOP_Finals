@@ -39,7 +39,13 @@ class Rim : public Product {
         const float width,
         std::string color,
         RimMaterial material)
-      : Product(std::move(name), std::move(manufacturer), diameter, stock_count, price_individual, price_business),
+      : Product(std::move(name),
+                std::move(manufacturer),
+                diameter,
+                RIM,
+                stock_count,
+                price_individual,
+                price_business),
         width(width),
         color(std::move(color)),
         material(material) {
@@ -70,6 +76,14 @@ class Rim : public Product {
     [[nodiscard]] RimMaterial getMaterial() const {
       return material;
     }
+    [[nodiscard]] std::string getMaterialAsString() const {
+      switch (material) {
+        case STEEL: {return "steel";}
+        case ALUMINIUM: {return "aluminium";}
+      }
+      return "error";
+    }
+
     void setMaterial(const RimMaterial material) {
       this->material = material;
     }
