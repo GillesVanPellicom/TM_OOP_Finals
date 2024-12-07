@@ -27,7 +27,7 @@ class Tire : public Product {
     Tire(std::string name,
          std::string manufacturer,
          const std::uint32_t diameter,
-         const unsigned int stock_count,
+         const std::uint32_t stock_count,
          const std::uint64_t price_individual,
          const std::uint64_t price_business,
          const std::uint32_t width,

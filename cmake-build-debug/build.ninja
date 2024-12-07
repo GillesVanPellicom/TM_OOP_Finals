@@ -73,6 +73,12 @@ build CMakeFiles/TM_OOP_Finals.dir/src/object/product/rim/Rim.cpp.o: CXX_COMPILE
   OBJECT_DIR = CMakeFiles/TM_OOP_Finals.dir
   OBJECT_FILE_DIR = CMakeFiles/TM_OOP_Finals.dir/src/object/product/rim
 
+build CMakeFiles/TM_OOP_Finals.dir/src/object/customer/Customer.cpp.o: CXX_COMPILER__TM_OOP_Finals_unscanned_Debug /Users/gvp/CLionProjects/TM_OOP_Finals/src/object/customer/Customer.cpp || cmake_object_order_depends_target_TM_OOP_Finals
+  DEP_FILE = CMakeFiles/TM_OOP_Finals.dir/src/object/customer/Customer.cpp.o.d
+  FLAGS = -pedantic -Wall -Werror -Ofast -g -std=gnu++2b -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX15.1.sdk -fcolor-diagnostics -fsanitize=address -fsanitize=undefined
+  OBJECT_DIR = CMakeFiles/TM_OOP_Finals.dir
+  OBJECT_FILE_DIR = CMakeFiles/TM_OOP_Finals.dir/src/object/customer
+
 
 # =============================================================================
 # Link build statements for EXECUTABLE target TM_OOP_Finals
@@ -81,7 +87,7 @@ build CMakeFiles/TM_OOP_Finals.dir/src/object/product/rim/Rim.cpp.o: CXX_COMPILE
 #############################################
 # Link the executable TM_OOP_Finals
 
-build TM_OOP_Finals: CXX_EXECUTABLE_LINKER__TM_OOP_Finals_Debug CMakeFiles/TM_OOP_Finals.dir/src/main.cpp.o CMakeFiles/TM_OOP_Finals.dir/src/object/product/Product.cpp.o CMakeFiles/TM_OOP_Finals.dir/src/object/product/tire/Tire.cpp.o CMakeFiles/TM_OOP_Finals.dir/src/object/product/rim/Rim.cpp.o
+build TM_OOP_Finals: CXX_EXECUTABLE_LINKER__TM_OOP_Finals_Debug CMakeFiles/TM_OOP_Finals.dir/src/main.cpp.o CMakeFiles/TM_OOP_Finals.dir/src/object/product/Product.cpp.o CMakeFiles/TM_OOP_Finals.dir/src/object/product/tire/Tire.cpp.o CMakeFiles/TM_OOP_Finals.dir/src/object/product/rim/Rim.cpp.o CMakeFiles/TM_OOP_Finals.dir/src/object/customer/Customer.cpp.o
   FLAGS = -pedantic -Wall -Werror -Ofast -g -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX15.1.sdk
   LINK_FLAGS = -fsanitize=address -fsanitize=undefined
   OBJECT_DIR = CMakeFiles/TM_OOP_Finals.dir

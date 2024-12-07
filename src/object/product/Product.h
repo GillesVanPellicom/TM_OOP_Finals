@@ -20,7 +20,7 @@ class Product {
   std::string manufacturer [[maybe_unused]];
   std::uint32_t diameter [[maybe_unused]]; // in mm
 
-  unsigned int stockCount [[maybe_unused]]; // in ℕ_{0}
+  std::uint32_t stockCount [[maybe_unused]]; // in ℕ_{0}
   std::uint64_t priceIndividual [[maybe_unused]]; // in cents, euro
   std::uint64_t priceBusiness [[maybe_unused]]; // in cents, euro
 
@@ -32,7 +32,7 @@ class Product {
     Product(std::string name,
             std::string manufacturer,
             const std::uint32_t diameter,
-            const unsigned int stock_count,
+            const std::uint32_t stock_count,
             const std::uint64_t price_individual,
             const std::uint64_t price_business)
       : name(std::move(name)),
@@ -73,13 +73,13 @@ class Product {
     }
 
     // StockCount
-    [[nodiscard]] unsigned int getStockCount() const {
+    [[nodiscard]] std::uint32_t getStockCount() const {
       return stockCount;
     }
-    void setStockCount(const unsigned int stock_count) {
+    void setStockCount(const std::uint32_t stock_count) {
       stockCount = stock_count;
     }
-    void decrementStockCount(const int stock_count_decrement) {
+    void decrementStockCount(const std::uint32_t stock_count_decrement) {
       stockCount -= stock_count_decrement;
     }
 
