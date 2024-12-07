@@ -6,6 +6,9 @@
 #include "object/product/rim/Rim.h"
 #include "menu/ChoiceMenu.hpp"
 #include "menu/SequentialMenu.hpp"
+#include "object/customer/Customer.h"
+
+// std::unordered_map<std::string, std::shared_ptr<Customer>>
 
 void testFn1() {
   std::cout << "test 1" << std::endl;
@@ -67,9 +70,9 @@ int main() {
 
 
   ChoiceMenu mainMenu("Main menu");
-  mainMenu.addSubMenu("Sequential menu", seqMenu);
+  mainMenu.addOption("Sequential menu", seqMenu);
   mainMenu.addOption("Theing", []() { std::cout << "You chose this theing.\n"; });
-  mainMenu.addSubMenu("Manage items", subMenu);
+  mainMenu.addOption("Manage items", subMenu);
 
   // Display the main menu
   mainMenu.display();

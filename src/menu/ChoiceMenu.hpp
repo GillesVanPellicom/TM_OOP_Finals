@@ -2,8 +2,7 @@
 #define CHOICE_MENU_H
 
 #include "Menu.hpp"
-#include <memory>  // For std::shared_ptr
-#include <utility>
+#include <memory>
 
 class ChoiceMenu final : public Menu {
   private:
@@ -12,22 +11,36 @@ class ChoiceMenu final : public Menu {
     bool shouldExit = false;
 
   public:
-    // Constructor accepts an optional parent menu
+    // ╔════════════════════════════════════════╗
+    // ║             Constructors               ║
+    // ╚════════════════════════════════════════╝
+
     explicit ChoiceMenu(const std::string& menu_name, const std::shared_ptr<Menu>& parent_menu = nullptr)
       : Menu(menu_name, parent_menu) {
       // Initialize exit option
-      addOption("Exit",
-                [this]() {
-                  shouldExit = true;
-                });
+      addOption("Exit", [this]() { shouldExit = true; });
     }
 
 
+    // ╔════════════════════════════════════════╗
+    // ║               functions                ║
+    // ╚════════════════════════════════════════╝
+
+    /**
+     * @brief adds an option which triggers a function
+     * @param description description of the option
+     * @param action function to be called
+     */
     void addOption(std::string description, const std::function<void()>& action) {
       options[optionCount++] = {std::move(description), action};
     }
 
-    void addSubMenu(std::string description, Menu& submenu) {
+    /**
+     * @brief adds an option which opens a submenu
+     * @param description description of the option
+     * @param submenu menu to be opened
+     */
+    void addOption(std::string description, Menu& submenu) {
       options[optionCount++] = {
         std::move(description), [&submenu, this]() {
           const auto parent = std::shared_ptr<Menu>(
@@ -41,7 +54,9 @@ class ChoiceMenu final : public Menu {
     }
 
 
-    // Displays the menu options
+    /**
+     * @brief Displays the menu and asks for a single choice.
+     */
     [[noreturn]] void display() override {
       int choice;
       while (true) {

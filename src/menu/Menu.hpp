@@ -15,7 +15,6 @@
 #include <iostream>
 #include <functional>
 #include <map>
-#include <utility>
 
 class Menu {
   protected:
@@ -28,6 +27,11 @@ class Menu {
       std::function<void()> action;
     };
 
+
+    /**
+     * @brief waits and prompts the user to press any key
+     * @param ignore Should a cin.ignore() be called
+     */
     static void waitForAnyKey(bool ignore) {
       std::cout << "Press any key to continue...\n";
       if (ignore) {
@@ -36,11 +40,20 @@ class Menu {
       std::cin.get();
     }
 
+
+  // ╔════════════════════════════════════════╗
+  // ║             Constructors               ║
+  // ╚════════════════════════════════════════╝
+
     explicit Menu(std::string menu_name, const std::shared_ptr<Menu>& parent_menu = nullptr)
       : menuName(std::move(menu_name)),
         parentMenu(parent_menu) {
     }
 
+
+  // ╔════════════════════════════════════════╗
+  // ║           Getters & Setters            ║
+  // ╚════════════════════════════════════════╝
 
     [[nodiscard]] std::string getMenuName() const {
       return menuName;
@@ -57,6 +70,7 @@ class Menu {
       parentMenu = parent_menu;
     }
 
+    // Misc
     virtual ~Menu() = default;
     virtual void display() = 0;
 };

@@ -16,6 +16,11 @@ class SequentialMenu final : public Menu {
     // Vector to store the user input values
     std::vector<std::string> collectedInputs;
 
+
+    // ╔════════════════════════════════════════╗
+    // ║               functions                ║
+    // ╚════════════════════════════════════════╝
+
     /**
      * Helper function to collect input
      * @param prompt Prompt to be shown to user
@@ -34,11 +39,6 @@ class SequentialMenu final : public Menu {
     std::function<void(const std::vector<std::string>&)> handler;
 
   public:
-    explicit SequentialMenu(const std::string& menu_name)
-      : Menu(menu_name) {
-    }
-
-
     /**
      * @brief Adds a collection stage to the menu
      *
@@ -74,6 +74,15 @@ class SequentialMenu final : public Menu {
      */
     void setHandler(std::function<void(const std::vector<std::string>&)> new_handler) {
       handler = std::move(new_handler);
+    }
+
+
+    // ╔════════════════════════════════════════╗
+    // ║             Constructors               ║
+    // ╚════════════════════════════════════════╝
+
+    explicit SequentialMenu(const std::string& menu_name)
+      : Menu(menu_name) {
     }
 };
 
