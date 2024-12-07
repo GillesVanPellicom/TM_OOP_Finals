@@ -1,0 +1,12 @@
+# ninja log v6
+338	380	1733580643707871785	TM_OOP_Finals	ad06b2679238b2ab
+2	338	1733580643372686906	CMakeFiles/TM_OOP_Finals.dir/src/main.cpp.o	8374833755675df1
+0	55	1733580891076325734	build.ninja	35d1926b89edad6a
+2	186	1733584655898502218	CMakeFiles/TM_OOP_Finals.dir/src/object/product/Product.cpp.o	5ad4dbb4e2b5f213
+3	189	1733584655898706552	CMakeFiles/TM_OOP_Finals.dir/src/object/product/rim/Rim.cpp.o	6f1427bc25ab0daf
+2	154	1733584671102307017	CMakeFiles/TM_OOP_Finals.dir/src/object/product/tire/Tire.cpp.o	d8b27c0b1f45413e
+2	172	1733584731264387014	CMakeFiles/TM_OOP_Finals.dir/src/object/product/Product.cpp.o	5ad4dbb4e2b5f213
+2	173	1733584731264500057	CMakeFiles/TM_OOP_Finals.dir/src/object/product/tire/Tire.cpp.o	d8b27c0b1f45413e
+2	179	1733584731264609557	CMakeFiles/TM_OOP_Finals.dir/src/object/product/rim/Rim.cpp.o	6f1427bc25ab0daf
+2	593	1733584731264131888	CMakeFiles/TM_OOP_Finals.dir/src/main.cpp.o	8374833755675df1
+593	638	1733584731855199947	TM_OOP_Finals	9c0b250664882952
