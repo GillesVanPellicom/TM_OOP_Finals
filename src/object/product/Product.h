@@ -98,8 +98,15 @@ class Product {
     void setStockCount(const std::uint32_t stock_count) {
       stockCount = stock_count;
     }
-    void decrementStockCount(const std::uint32_t stock_count_decrement) {
+    /**
+     * @brief Decrements stock by given amount
+     * @param stock_count_decrement
+     * @return true if success, else false
+     */
+    bool decrementStockCount(const std::uint32_t stock_count_decrement) {
+      if (stockCount - stock_count_decrement < 0) return false;
       stockCount -= stock_count_decrement;
+      return true;
     }
 
     // priceIndividual

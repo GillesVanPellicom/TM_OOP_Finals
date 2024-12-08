@@ -91,17 +91,14 @@ void Program::initMenu() const {
   const auto stockMenu = std::make_shared<ChoiceMenu>("Stock menu");
 
   const auto fullStockMenu = createFullStockMenu();
-  const auto filteredStockMenu = createStockFilterMenu(stockMenu);
-
-
-
+  const auto filteredStockMenu = createStockFilterByQueryMenu(stockMenu);
 
   stockMenu->addOption("Show full stock", fullStockMenu);
   stockMenu->addOption("Show filtered stock", filteredStockMenu);
 
   const auto mainMenu = std::make_shared<ChoiceMenu>("Main menu");
   mainMenu->addOption("View stock", stockMenu);
-  mainMenu->addOption("Save changes", [this] { serialize("../mem.json.bak"); });
+  mainMenu->addOption("Save changes", [this] { serialize("../mem.json"); });
 
   mainMenu->display();
 }
@@ -114,12 +111,11 @@ std::shared_ptr<ChoiceMenu> Program::createFullStockMenu(const std::string& filt
   for (const auto& product : products) {
     if (filterEnabled) {
       // name and filter to lowercase
-      std::string lowercaseProductName = product->getName();
-      std::ranges::transform(lowercaseProductName, lowercaseProductName.begin(), ::tolower);
-
       std::string lowercaseFilterStr = filter_str;
       std::ranges::transform(lowercaseFilterStr, lowercaseFilterStr.begin(), ::tolower);
 
+      std::string lowercaseProductName = product->getName();
+      std::ranges::transform(lowercaseProductName, lowercaseProductName.begin(), ::tolower);
       if (!lowercaseProductName.contains(lowercaseFilterStr)) {
         // Filtered out -> skip
         continue;
@@ -132,14 +128,92 @@ std::shared_ptr<ChoiceMenu> Program::createFullStockMenu(const std::string& filt
 }
 
 
-std::shared_ptr<SequentialMenu> Program::createStockFilterMenu(const std::shared_ptr<Menu>& parent) const {
+// std::shared_ptr<SequentialMenu> Program::createStockFilterByQueryMenu(const std::shared_ptr<Menu>& parent) const {
+//   auto filterMenu = std::make_shared<SequentialMenu>("Filter objects");
+//   filterMenu->setSuffixText(
+//     "Search format: X/<query>"
+//     "\n\tE.g. n/sport\n"
+//     "\nwhere X:"
+//     "\n\t- n: name"
+//     "\n\t- s: size"
+//     "\n\t- t: type\n"
+//     );
+//   filterMenu->addCollection("Search query");
+//   filterMenu->setHandler([&parent, &filterMenu, this](const std::vector<std::string>& inputs) {
+//     const auto filteredFullStockMenu = createFullStockMenu(inputs[0]);
+//     filterMenu->setParentMenu(filteredFullStockMenu);
+//     filteredFullStockMenu->setParentMenu(parent);
+//   });
+//   return filterMenu;
+// }
+
+std::shared_ptr<SequentialMenu> Program::createStockFilterByQueryMenu(const std::shared_ptr<Menu>& parent) const {
   auto filterMenu = std::make_shared<SequentialMenu>("Filter objects");
+  filterMenu->setSuffixText(
+    "Search format: X/<query>"
+    "\n\tE.g. n/sport\n"
+    "\nwhere X:"
+    "\n\t- n: name"
+    "\n\t- d: diameter"
+    "\n\t- t: type\n"
+  );
   filterMenu->addCollection("Search query");
+
   filterMenu->setHandler([&parent, &filterMenu, this](const std::vector<std::string>& inputs) {
-    const auto filteredFullStockMenu = createFullStockMenu(inputs[0]);
+    if (inputs.empty()) {
+      std::cerr << "Invalid input: No query provided." << std::endl;
+      filterMenu->display();
+      return;
+    }
+
+    const std::string& input = inputs[0];
+    const auto delimiterPos = input.find('/');
+    if (delimiterPos == std::string::npos || delimiterPos == 0 || delimiterPos == input.size() - 1) {
+      std::cerr << "Invalid input format: Expected X/<query>." << std::endl;
+      filterMenu->display();
+      return;
+    }
+
+    const char filterType = input[0];
+    std::string query = input.substr(delimiterPos + 1);
+
+    // Convert query to lowercase
+    std::ranges::transform(query, query.begin(), ::tolower);
+
+    const auto filteredFullStockMenu = std::make_shared<ChoiceMenu>("Filtered Stock Menu");
+
+    for (const auto& product : products) {
+      std::string targetField;
+      switch (filterType) {
+        case 'n': // Name
+          targetField = product->getName();
+          break;
+        case 'd': // Diameter
+          targetField = std::to_string(product->getDiameter());
+          break;
+        case 't': // Type
+          targetField = product->getTypeAsString();
+          break;
+        default:
+          std::cerr << "Invalid filter type: " << filterType << ". Please try again." << std::endl;
+          filterMenu->display();
+          return;
+      }
+
+      // Convert target field to lowercase
+      std::ranges::transform(targetField, targetField.begin(), ::tolower);
+
+      if (targetField.contains(query)) {
+        filteredFullStockMenu->addOption(product->getName(),
+                                         createProductOptionHandler(product, filteredFullStockMenu));
+      }
+    }
+
     filterMenu->setParentMenu(filteredFullStockMenu);
     filteredFullStockMenu->setParentMenu(parent);
+    filteredFullStockMenu->display();
   });
+
   return filterMenu;
 }
 
@@ -203,7 +277,7 @@ std::string Program::buildProductInfo(const std::shared_ptr<Product>& product) {
  * @brief Handles full software initialization.
  */
 void Program::init() {
-  deserialize("../mem.json.bak");
+  deserialize("../mem.json");
 
   // FIXME: dev stuff, remove when serialization works
   users["GYLS"] = std::make_shared<User>("Gilles", ADMIN);

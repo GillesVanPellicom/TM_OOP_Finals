@@ -10,7 +10,6 @@ class ChoiceMenu final : public Menu {
     std::map<int, MenuEntry> options;
     int optionCount = 1;
     bool shouldExit = false;
-    std::string suffixText = "";
 
   public:
     // ╔════════════════════════════════════════╗
@@ -81,7 +80,7 @@ class ChoiceMenu final : public Menu {
           std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Ignore incorrect input
 
           std::cout << "\033[1;31mInvalid option. Please try again.\033[0m\n";
-
+          waitForAnyKey(false);
           continue;
         }
 
@@ -97,15 +96,6 @@ class ChoiceMenu final : public Menu {
           }
         }
       }
-    }
-
-    // suffixText
-    [[nodiscard]] std::string getSuffixText() const {
-      return suffixText;
-    }
-    void setSuffixText(std::string suffix_text) {
-      suffix_text = "\n" + suffix_text + "\n";
-      suffixText = std::move(suffix_text);
     }
 };
 

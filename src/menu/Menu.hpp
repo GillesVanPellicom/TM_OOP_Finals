@@ -20,6 +20,7 @@ class Menu {
   protected:
     std::string menuName;
     std::shared_ptr<Menu> parentMenu;
+    std::string suffixText = "";
 
   public:
     struct MenuEntry {
@@ -41,9 +42,9 @@ class Menu {
     }
 
 
-  // ╔════════════════════════════════════════╗
-  // ║             Constructors               ║
-  // ╚════════════════════════════════════════╝
+    // ╔════════════════════════════════════════╗
+    // ║             Constructors               ║
+    // ╚════════════════════════════════════════╝
 
     explicit Menu(std::string menu_name, const std::shared_ptr<Menu>& parent_menu = nullptr)
       : menuName(std::move(menu_name)),
@@ -51,9 +52,9 @@ class Menu {
     }
 
 
-  // ╔════════════════════════════════════════╗
-  // ║           Getters & Setters            ║
-  // ╚════════════════════════════════════════╝
+    // ╔════════════════════════════════════════╗
+    // ║           Getters & Setters            ║
+    // ╚════════════════════════════════════════╝
 
     [[nodiscard]] std::string getMenuName() const {
       return menuName;
@@ -68,6 +69,15 @@ class Menu {
     }
     void setParentMenu(const std::shared_ptr<Menu>& parent_menu) {
       parentMenu = parent_menu;
+    }
+
+    // suffixText
+    [[nodiscard]] std::string getSuffixText() const {
+      return suffixText;
+    }
+    void setSuffixText(std::string suffix_text) {
+      suffix_text = "\n" + suffix_text + "\n";
+      suffixText = std::move(suffix_text);
     }
 
     // Misc

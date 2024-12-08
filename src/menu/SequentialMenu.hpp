@@ -26,7 +26,7 @@ class SequentialMenu final : public Menu {
      * @param prompt Prompt to be shown to user
      */
     void collect(const std::string& prompt) {
-      std::cout << prompt << "\n> ";
+      std::cout << "\n"<< prompt << "\n> ";
 
       std::string var;
       std::getline(std::cin, var);
@@ -53,13 +53,17 @@ class SequentialMenu final : public Menu {
      * @brief Displays the menu and sequentially asks for inputs.
      */
     void display() override {
-      std::cout << "\033[1;33m[" << menuName << "]\033[0m\n";
+      collectedInputs.clear();
+
+      std::cout << "\033[1;33m[" << menuName << "]\033[0m" << suffixText;
       // Clear input buffer
       std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
       // Loop through the input actions and display prompts
       for (auto& prompt : inputPrompts) {
         collect(prompt);
       }
+
+      std::cout << std::endl;
 
       // After collecting inputs, call the handler function
       if (handler) { handler(collectedInputs); }
