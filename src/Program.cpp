@@ -91,13 +91,9 @@ void Program::initMenu() const {
   const auto stockMenu = std::make_shared<ChoiceMenu>("Stock menu");
 
   const auto fullStockMenu = createFullStockMenu();
-  const auto filteredStockMenu = createFilterMenu();
+  const auto filteredStockMenu = createStockFilterMenu(stockMenu);
 
-  filteredStockMenu->setHandler([&filteredStockMenu, &stockMenu, this](const std::vector<std::string>& inputs) {
-    const auto filteredFullStockMenu = createFullStockMenu(inputs[0]);
-    filteredStockMenu->setParentMenu(filteredFullStockMenu);
-    filteredFullStockMenu->setParentMenu(stockMenu);
-  });
+
 
 
   stockMenu->addOption("Show full stock", fullStockMenu);
@@ -136,9 +132,14 @@ std::shared_ptr<ChoiceMenu> Program::createFullStockMenu(const std::string& filt
 }
 
 
-std::shared_ptr<SequentialMenu> Program::createFilterMenu() const {
+std::shared_ptr<SequentialMenu> Program::createStockFilterMenu(const std::shared_ptr<Menu>& parent) const {
   auto filterMenu = std::make_shared<SequentialMenu>("Filter objects");
   filterMenu->addCollection("Search query");
+  filterMenu->setHandler([&parent, &filterMenu, this](const std::vector<std::string>& inputs) {
+    const auto filteredFullStockMenu = createFullStockMenu(inputs[0]);
+    filterMenu->setParentMenu(filteredFullStockMenu);
+    filteredFullStockMenu->setParentMenu(parent);
+  });
   return filterMenu;
 }
 
