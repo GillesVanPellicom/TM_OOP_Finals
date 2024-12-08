@@ -94,6 +94,13 @@ void Program::setupSession() {
   }
 }
 
+void Program::removeProduct(const std::shared_ptr<Product>& productToRemove) {
+  std::erase_if(products,
+                [&productToRemove](const std::shared_ptr<Product>& product) {
+                  return product == productToRemove;
+                });
+}
+
 
 void Program::initMenu() {
   const auto stockMenu = std::make_shared<ChoiceMenu>("Stock menu");
@@ -228,7 +235,7 @@ std::shared_ptr<ChoiceMenu> Program::createAddStockMenu() {
 }
 
 
-std::shared_ptr<ChoiceMenu> Program::createFullStockMenu(const std::string& filter_str) const {
+std::shared_ptr<ChoiceMenu> Program::createFullStockMenu(const std::string& filter_str) {
   bool filterEnabled = false;
   if (!filter_str.empty()) { filterEnabled = true; }
   auto _menu = std::make_shared<ChoiceMenu>("Stock menu");
@@ -252,94 +259,94 @@ std::shared_ptr<ChoiceMenu> Program::createFullStockMenu(const std::string& filt
 }
 
 
-std::shared_ptr<SequentialMenu> Program::createStockFilterByQueryMenu(const std::shared_ptr<Menu>& parent) const {
-    // Ensure _menu is successfully created.
-    auto _menu = std::make_shared<SequentialMenu>("Filter objects");
-    if (!_menu) {
-        std::cerr << "Failed to create the filter menu!" << std::endl;
-        return nullptr; // Exit early on failure.
+std::shared_ptr<SequentialMenu> Program::createStockFilterByQueryMenu(const std::shared_ptr<Menu>& parent) {
+  // Ensure _menu is successfully created.
+  auto _menu = std::make_shared<SequentialMenu>("Filter objects");
+  if (!_menu) {
+    std::cerr << "Failed to create the filter menu!" << std::endl;
+    return nullptr; // Exit early on failure.
+  }
+
+  _menu->setSuffixText(
+    "Search format: X/<query>"
+    "\n\tE.g. n/sport\n"
+    "\nwhere X:"
+    "\n\t- n: name"
+    "\n\t- d: diameter"
+    "\n\t- t: type (tire, rim)\n"
+  );
+  _menu->addCollection("Search query");
+
+  // Handler for user input
+  _menu->setHandler([this, &parent, &_menu](const std::vector<std::string>& inputs) {
+    if (inputs.empty()) {
+      std::cerr << "Invalid input: No query provided." << std::endl;
+      _menu->display();
+      return;
     }
 
-    _menu->setSuffixText(
-        "Search format: X/<query>"
-        "\n\tE.g. n/sport\n"
-        "\nwhere X:"
-        "\n\t- n: name"
-        "\n\t- d: diameter"
-        "\n\t- t: type\n"
-    );
-    _menu->addCollection("Search query");
+    const std::string& input = inputs[0];
+    const auto delimiterPos = input.find('/');
+    if (delimiterPos == std::string::npos || delimiterPos == 0 || delimiterPos == input.size() - 1) {
+      std::cerr << "Invalid input format: Expected X/<query>." << std::endl;
+      _menu->display();
+      return;
+    }
 
-    // Handler for user input
-    _menu->setHandler([this, &parent, &_menu](const std::vector<std::string>& inputs) {
-        if (inputs.empty()) {
-            std::cerr << "Invalid input: No query provided." << std::endl;
-            _menu->display();
-            return;
-        }
+    const char filterType = input[0];
+    std::string query = input.substr(delimiterPos + 1);
 
-        const std::string& input = inputs[0];
-        const auto delimiterPos = input.find('/');
-        if (delimiterPos == std::string::npos || delimiterPos == 0 || delimiterPos == input.size() - 1) {
-            std::cerr << "Invalid input format: Expected X/<query>." << std::endl;
-            _menu->display();
-            return;
-        }
+    // Convert query to lowercase
+    std::ranges::transform(query.begin(), query.end(), query.begin(), ::tolower);
 
-        const char filterType = input[0];
-        std::string query = input.substr(delimiterPos + 1);
+    // Initialize ChoiceMenu safely.
+    const auto filteredFullStockMenu = std::make_shared<ChoiceMenu>("Filtered Stock Menu");
+    if (!filteredFullStockMenu) {
+      std::cerr << "Failed to create filtered stock menu!" << std::endl;
+      return;
+    }
 
-        // Convert query to lowercase
-        std::ranges::transform(query.begin(), query.end(), query.begin(), ::tolower);
+    for (const auto& product : products) {
+      std::string targetField;
+      switch (filterType) {
+        case 'n': // Name
+          targetField = product->getName();
+          break;
+        case 'd': // Diameter
+          targetField = std::to_string(product->getDiameter());
+          break;
+        case 't': // Type
+          targetField = product->getTypeAsString();
+          break;
+        default:
+          std::cerr << "Invalid filter type: " << filterType << ". Please try again." << std::endl;
+          _menu->display();
+          return;
+      }
 
-        // Initialize ChoiceMenu safely.
-        const auto filteredFullStockMenu = std::make_shared<ChoiceMenu>("Filtered Stock Menu");
-        if (!filteredFullStockMenu) {
-            std::cerr << "Failed to create filtered stock menu!" << std::endl;
-            return;
-        }
+      // Convert target field to lowercase
+      std::ranges::transform(targetField.begin(), targetField.end(), targetField.begin(), ::tolower);
 
-        for (const auto& product : products) {
-            std::string targetField;
-            switch (filterType) {
-                case 'n': // Name
-                    targetField = product->getName();
-                    break;
-                case 'd': // Diameter
-                    targetField = std::to_string(product->getDiameter());
-                    break;
-                case 't': // Type
-                    targetField = product->getTypeAsString();
-                    break;
-                default:
-                    std::cerr << "Invalid filter type: " << filterType << ". Please try again." << std::endl;
-                    _menu->display();
-                    return;
-            }
+      if (targetField.contains(query)) {
+        filteredFullStockMenu->addOption(product->getName(),
+                                         createProductOptionHandler(product, filteredFullStockMenu));
+      }
+    }
 
-            // Convert target field to lowercase
-            std::ranges::transform(targetField.begin(), targetField.end(), targetField.begin(), ::tolower);
+    // Safely set up parent-child relationships between menus.
+    _menu->setParentMenu(filteredFullStockMenu);
+    filteredFullStockMenu->setParentMenu(parent);
 
-            if (targetField.contains(query)) {
-                filteredFullStockMenu->addOption(product->getName(),
-                                                 createProductOptionHandler(product, filteredFullStockMenu));
-            }
-        }
+    // Display the menu after setup
+    filteredFullStockMenu->display();
+  });
 
-        // Safely set up parent-child relationships between menus.
-        _menu->setParentMenu(filteredFullStockMenu);
-        filteredFullStockMenu->setParentMenu(parent);
-
-        // Display the menu after setup
-        filteredFullStockMenu->display();
-    });
-
-    return _menu;
+  return _menu;
 }
 
 
 std::function<void()> Program::createProductOptionHandler(const std::shared_ptr<Product>& product,
-                                                          const std::shared_ptr<Menu>& parent) const {
+                                                          const std::shared_ptr<Menu>& parent) {
   return [this, product, parent]() {
     const auto changeStockMenu = createChangeStockMenu(product);
 
@@ -347,11 +354,13 @@ std::function<void()> Program::createProductOptionHandler(const std::shared_ptr<
 
     const auto inspectMenu = std::make_shared<ChoiceMenu>("Inspect Product", nullptr);
     inspectMenu->addOption("Add stock", changeStockMenu);
-    // if (permissionLevel == ADMIN) {
-    //   inspectMenu->addOption("Remove Product",
-    //                          [this] {
-    //                          });
-    // }
+    if (permissionLevel == ADMIN) {
+      inspectMenu->addOption("Remove Product",
+                             [&product, this]() {
+                               removeProduct(product);
+                               initMenu();
+                             });
+    }
     inspectMenu->setSuffixText(productInfo);
     inspectMenu->setParentMenu(parent);
     changeStockMenu->setParentMenu(parent);
@@ -360,7 +369,7 @@ std::function<void()> Program::createProductOptionHandler(const std::shared_ptr<
 }
 
 
-std::shared_ptr<SequentialMenu> Program::createChangeStockMenu(const std::shared_ptr<Product>& product) const {
+std::shared_ptr<SequentialMenu> Program::createChangeStockMenu(const std::shared_ptr<Product>& product) {
   // NOLINT(*-convert-member-functions-to-static)
   auto _menu = std::make_shared<SequentialMenu>("Stock menu");
   _menu->addCollection("Amount of stock to add");
