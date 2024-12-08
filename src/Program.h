@@ -27,6 +27,7 @@ class Program {
     std::unordered_map<std::string, std::shared_ptr<User> > users;
     std::vector<std::shared_ptr<Product> > products;
     std::string cuid;
+    UserPermissionLevel permissionLevel = EMPLOYEE;
 
     /**
    * @brief Saves contents of program to memory
@@ -53,10 +54,16 @@ class Program {
     /**
     * @brief Entrypoint for the menu tree. Loads main menu.
     */
-    void initMenu() const;
+    void initMenu();
+
+
+    // Following are all menu-related functions which should only be called internally.
+    // They are functions purely for modularity and separation of concern.
+    // I will not comment all of these.
 
     std::function<void()> createProductOptionHandler(const std::shared_ptr<Product>& product,
                                                      const std::shared_ptr<Menu>& parent) const;
+    std::shared_ptr<ChoiceMenu> createAddStockMenu();
     std::shared_ptr<ChoiceMenu> createFullStockMenu(const std::string& filter_str = "") const;
     std::shared_ptr<SequentialMenu> createStockFilterByQueryMenu(const std::shared_ptr<Menu>& parent) const;
     std::shared_ptr<SequentialMenu> createChangeStockMenu(const std::shared_ptr<Product>& product) const;
