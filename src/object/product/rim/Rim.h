@@ -51,6 +51,10 @@ class Rim : public Product {
         material(material) {
     }
 
+    Rim(const nlohmann::json& j): Product() {
+      Rim::deserialize(j);
+    }
+
 
     // ╔════════════════════════════════════════╗
     // ║           Getters & Setters            ║
@@ -78,15 +82,28 @@ class Rim : public Product {
     }
     [[nodiscard]] std::string getMaterialAsString() const {
       switch (material) {
-        case STEEL: {return "steel";}
-        case ALUMINIUM: {return "aluminium";}
+        case STEEL: { return "steel"; }
+        case ALUMINIUM: { return "aluminium"; }
       }
       return "error";
     }
-
+    void setMaterialAsString(const std::string& materialStr) {
+      if (materialStr == "steel") {
+        this->material = STEEL;
+      } else if (materialStr == "aluminium") {
+        this->material = ALUMINIUM;
+      } else {
+        this->material = static_cast<RimMaterial>(-1); // Invalid material
+      }
+    }
     void setMaterial(const RimMaterial material) {
       this->material = material;
     }
+
+    ~Rim() override = default;
+
+    [[nodiscard]] nlohmann::json serialize() override;
+    void deserialize(const nlohmann::json& j) override;
 };
 
 

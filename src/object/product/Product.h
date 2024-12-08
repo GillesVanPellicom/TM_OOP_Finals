@@ -9,7 +9,9 @@
 #ifndef PRODUCT_H
 #define PRODUCT_H
 
+
 #include <string>
+#include <json.hpp>
 
 enum ProductType {
   TIRE,
@@ -50,6 +52,8 @@ class Product {
         priceIndividual(price_individual),
         priceBusiness(price_business) {
     }
+
+    Product() = default;
 
     static std::string convertCentsToReadable(const uint64_t cents) {
       const uint64_t euro = cents / 100;
@@ -118,17 +122,29 @@ class Product {
     [[nodiscard]] bool instanceOf(ProductType type) const {
       return this->type == type;
     }
-    std::string getTypeAsString() const {
+    [[nodiscard]] std::string getTypeAsString() const {
       switch (this->type) {
         case TIRE: { return "tire"; }
         case RIM: { return "rim"; }
       }
       return "error";
     }
+    void setTypeAsString(const std::string& typeStr) {
+      if (typeStr == "tire") {
+        this->type = TIRE;
+      } else if (typeStr == "rim") {
+        this->type = RIM;
+      } else {
+        this->type = static_cast<ProductType>(-1); // Invalid type
+      }
+    }
 
 
     // Virtual Destructor for Polymorphism
     virtual ~Product() = default;
+
+    [[nodiscard]] virtual nlohmann::json serialize() = 0;
+    virtual void deserialize(const nlohmann::json& j) = 0;
 };
 
 #endif //PRODUCT_H

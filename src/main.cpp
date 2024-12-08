@@ -2,6 +2,8 @@
 #include <iostream>
 
 // Local
+#include <fstream>
+
 #include "object/product/tire/Tire.h"
 #include "object/product/rim/Rim.h"
 #include "menu/ChoiceMenu.hpp"
@@ -14,6 +16,75 @@ std::vector<std::shared_ptr<Product> > products;
 std::string cuid;
 
 
+
+/**
+ * @brief Saves contents of program to memory
+ *
+ * @param filePath Path to json save file
+ */
+void serialize(const std::string& filePath) {
+  nlohmann::json j; // JSON root
+
+
+  // Products
+  // Create a JSON array to hold all the products
+  nlohmann::json products_array = nlohmann::json::array();
+  for (const auto& p : products) {
+    // Add to the products array
+    products_array.push_back(p->serialize());
+  }
+  j["products"] = products_array;
+  // END Products
+
+  // Write the JSON to a file
+  std::ofstream outputFile(filePath);
+  if (!outputFile.is_open()) {
+    std::cerr << "Could not open the file at " << filePath << std::endl;
+    return;
+  }
+
+  outputFile << j.dump(4);
+  outputFile.close();
+  std::cout << "Save complete.\n" << std::endl;
+}
+
+
+/**
+ * @brief Reads in contents of program from memory
+ *
+ * @param filePath Path to json save file
+ */
+void deserialize(const std::string& filePath) {
+  // Read JSON from file
+  std::ifstream inputFile(filePath);
+  if (!inputFile.is_open()) {
+    std::cerr << "Could not open the file at " << filePath << std::endl;
+    return;
+  }
+
+  nlohmann::json j;
+  inputFile >> j;
+
+  if (j.contains("products") && j["products"].is_array()) {
+    for (const auto& product_json : j["products"]) {
+      std::string type = product_json.at("type").get<std::string>();
+
+      if (type == "tire") {
+        auto tire = std::make_shared<Tire>(product_json);
+        products.emplace_back(tire);
+      } else if (type == "rim") {
+        auto rim = std::make_shared<Rim>(product_json);
+        products.emplace_back(rim);
+      }
+    }
+  }
+  std::cout << "Loading from memory completed.\n" << std::endl;
+}
+
+
+/**
+ * @brief Asks user for their UID and sets up session permissions accordingly
+ */
 void setupSession() {
   while (true) {
     // get input
@@ -37,6 +108,10 @@ void setupSession() {
   }
 }
 
+
+/**
+ * @brief Entrypoint for the menu tree. Loads main menu.
+ */
 void initMenu() {
   auto fullStockMenu = std::make_shared<ChoiceMenu>("Stock menu");
   for (const auto& product : products) {
@@ -88,202 +163,36 @@ void initMenu() {
       });
   }
 
-
   const auto stockMenu = std::make_shared<ChoiceMenu>("Stock menu");
   stockMenu->addOption("Show full stock", fullStockMenu);
 
 
   const auto mainMenu = std::make_shared<ChoiceMenu>("Main menu");
   mainMenu->addOption("View stock", stockMenu);
+  mainMenu->addOption("Save changes", [] { serialize("../mem.json.bak"); });
 
   // Display the main menu
   mainMenu->display();
 }
 
 
+/**
+ * @brief Handles full software initialization.
+ */
 void init() {
+  deserialize("../mem.json.bak");
+
   // FIXME: dev stuff, remove when serialization works
   users["GYLS"] = std::make_shared<User>("Gilles", ADMIN);
   users["ALSTY"] = std::make_shared<User>("Alec", EMPLOYEE);
-
-  products.emplace_back(std::make_shared<Tire>(
-    "WinterGrip X200",
-    "Goodyear",
-    18,
-    50,
-    12075,
-    11550,
-    225,
-    55,
-    'H'
-  ));
-
-  products.emplace_back(std::make_shared<Tire>(
-    "AllSeason Pro",
-    "Michelin",
-    16,
-    100,
-    9500,
-    8800,
-    205,
-    60,
-    'T'
-  ));
-
-  products.emplace_back(std::make_shared<Tire>(
-    "SportMaxx Ultra",
-    "Dunlop",
-    19,
-    30,
-    14500,
-    13500,
-    245,
-    40,
-    'V'
-  ));
-
-  products.emplace_back(std::make_shared<Tire>(
-    "EcoDrive E300",
-    "Bridgestone",
-    15,
-    75,
-    8000,
-    7550,
-    185,
-    65,
-    'S'
-  ));
-
-  products.emplace_back(std::make_shared<Tire>(
-    "RoadMaster R500",
-    "Continental",
-    20,
-    20,
-    20000,
-    19000,
-    275,
-    35,
-    'Y'
-  ));
-
-  products.emplace_back(std::make_shared<Rim>(
-    "AlloyStyle A500",
-    "BBS",
-    18,
-    40,
-    25000,
-    24000,
-    8.5f,
-    "Silver",
-    ALUMINIUM
-  ));
-
-  products.emplace_back(std::make_shared<Rim>(
-    "SteelBasic S200",
-    "OZ Racing",
-    16,
-    100,
-    8000,
-    7500,
-    6.5f,
-    "Black",
-    STEEL
-  ));
-
-  products.emplace_back(std::make_shared<Rim>(
-    "CarbonXtreme C800",
-    "Enkei",
-    19,
-    10,
-    55000,
-    53000,
-    9.0f,
-    "Matte Black",
-    ALUMINIUM
-  ));
-
-  products.emplace_back(std::make_shared<Rim>(
-    "ChromeClassic R300",
-    "American Racing",
-    17,
-    25,
-    20000,
-    19000,
-    7.0f,
-    "Chrome",
-    ALUMINIUM
-  ));
-
-  products.emplace_back(std::make_shared<Rim>(
-    "OffRoad Master OR900",
-    "Method Race Wheels",
-    20,
-    15,
-    35000,
-    34000,
-    10.0f,
-    "Gunmetal",
-    STEEL
-  ));
 
   setupSession();
   initMenu();
 }
 
 
+
 int main() {
   init();
-  //   // Vector to hold shared_ptr to Product objects
-  //   std::vector<std::shared_ptr<Product>> products;
-  //
-  //   // Loop to create a few Tire objects and store them in the vector
-  //   products.reserve(5);
-  // for (int i = 0; i < 5; ++i) {
-  //     // Creating a new Tire object and adding it to the vector
-  //     products.push_back(std::make_shared<Tire>(
-  //         "Tire " + std::to_string(i + 1),  // name
-  //         "Manufacturer " + std::to_string(i + 1),  // manufacturer
-  //         17 + i,  // diameter
-  //         100 + i * 10,  // stock count
-  //         5000 + i * 100,  // price individual
-  //         4500 + i * 90,  // price business
-  //         200 + i * 10,  // width
-  //         55 + i,  // height
-  //         'H' + (i % 5)  // speed index (cycling through 'H', 'V', etc.)
-  //     ));
-  //   }
-  //
-  //   // Output the tire names as an example of access
-  //   for (const auto& product : products) {
-  //     if (const auto tire = std::dynamic_pointer_cast<Tire>(product)) {
-  //       std::cout << tire->getName() << std::endl;
-  //     }
-  //   }
-
-
-  // ChoiceMenu subMenu("Change inventory");
-  // subMenu.addOption("Add item", testFn1);
-  // subMenu.addOption("Remove item", testFn2);
-  //
-  //
-  // SequentialMenu seqMenu("Sequential Input");
-  // seqMenu.addCollection("Car name");
-  // seqMenu.addCollection("Amount");
-  // seqMenu.setHandler([](const std::vector<std::string>& inputs) {
-  //   const std::string& carName = inputs[0];
-  //   const int amount = std::stoi(inputs[1]);
-  //
-  //   std::cout << "\nYou chose " << carName << " with amount " << amount << ".\n";
-  // });
-  //
-  //
-  // ChoiceMenu mainMenu("Main menu");
-  // mainMenu.addOption("Sequential menu", seqMenu);
-  // mainMenu.addOption("Theing", []() { std::cout << "You chose this theing.\n"; });
-  // mainMenu.addOption("Manage items", subMenu);
-
-  // Display the main menu
-  // mainMenu.display();
-
   return 0;
 }

@@ -9,7 +9,10 @@ add_compile_options(-fsanitize=address -fsanitize=undefined)
 add_link_options(-fsanitize=address -fsanitize=undefined)
 
 # Compiler Flags
-set(CMAKE_CXX_FLAGS "-pedantic -Wall -Werror -Ofast")
+set(CMAKE_CXX_FLAGS "-pedantic -Wall -Werror")
+
+# Include nlohmann JSON header
+include_directories(${CMAKE_SOURCE_DIR}/src/lib/nlohmann)
 
 # Source Files
 set(SOURCE_FILES src/main.cpp

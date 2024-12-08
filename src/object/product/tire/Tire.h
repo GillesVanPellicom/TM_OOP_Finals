@@ -11,6 +11,7 @@
 #ifndef TIRE_H
 #define TIRE_H
 
+
 #include "../Product.h"
 
 
@@ -45,6 +46,9 @@ class Tire : public Product {
         speedIndex(speed_index) {
     }
 
+    Tire(const nlohmann::json& j): Product() {
+      Tire::deserialize(j);
+    }
 
     // ╔════════════════════════════════════════╗
     // ║           Getters & Setters            ║
@@ -73,6 +77,11 @@ class Tire : public Product {
     void setSpeedIndex(const char speed_index) {
       this->speedIndex = speed_index;
     }
+
+    ~Tire() override = default;
+
+    [[nodiscard]] nlohmann::json serialize() override;
+    void deserialize(const nlohmann::json& j) override;
 };
 
 

@@ -222,6 +222,9 @@ TM_OOP_Finals_IS_TOP_LEVEL:STATIC=ON
 //Value Computed by CMake
 TM_OOP_Finals_SOURCE_DIR:STATIC=/Users/gvp/CLionProjects/TM_OOP_Finals
 
+//The directory containing a CMake configuration file for nlohmann.
+nlohmann_DIR:PATH=nlohmann_DIR-NOTFOUND
+
 
 ########################
 # INTERNAL cache entries
