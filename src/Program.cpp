@@ -9,13 +9,10 @@
 #include "Program.h"
 
 
-
 void Program::serialize(const std::string& filePath) const {
   nlohmann::json j; // JSON root
 
-
   // Products
-  // Create a JSON array to hold all the products
   nlohmann::json products_array = nlohmann::json::array();
   for (const auto& p : products) {
     // Add to the products array
@@ -37,7 +34,6 @@ void Program::serialize(const std::string& filePath) const {
 }
 
 
-
 void Program::deserialize(const std::string& filePath) {
   // Read JSON from file
   std::ifstream inputFile(filePath);
@@ -45,26 +41,26 @@ void Program::deserialize(const std::string& filePath) {
     std::cerr << "Could not open the file at " << filePath << std::endl;
     return;
   }
-
   nlohmann::json j;
   inputFile >> j;
 
+  // Products
   if (j.contains("products") && j["products"].is_array()) {
     for (const auto& product_json : j["products"]) {
-      std::string type = product_json.at("type").get<std::string>();
-
-      if (type == "tire") {
-        auto tire = std::make_shared<Tire>(product_json);
+      if (auto type = product_json.at("type").get<std::string>();
+        type == "tire") {
+        const auto tire = std::make_shared<Tire>(product_json);
         products.emplace_back(tire);
       } else if (type == "rim") {
-        auto rim = std::make_shared<Rim>(product_json);
+        const auto rim = std::make_shared<Rim>(product_json);
         products.emplace_back(rim);
       }
     }
   }
+  // END Products
+
   std::cout << "Loading from memory completed.\n" << std::endl;
 }
-
 
 
 void Program::setupSession() {
@@ -91,68 +87,114 @@ void Program::setupSession() {
 }
 
 
-
 void Program::initMenu() const {
-  auto fullStockMenu = std::make_shared<ChoiceMenu>("Stock menu");
-  for (const auto& product : products) {
-    fullStockMenu->addOption(
-      product->getName(),
-      [fullStockMenu, product]() {
-        // FIXME: addStockMenu exits to inspectMenu whilst parent is fullStockMenu ¯\_(ツ)_/¯
-        const auto addStockMenu = std::make_shared<SequentialMenu>("Stock menu");
-        addStockMenu->addCollection("Amount of stock to add");
-        addStockMenu->setHandler([product](const std::vector<std::string>& inputs) {
-          product->setStockCount(product->getStockCount() + std::stoi(inputs[0]));
-        });
-
-        std::string productInfo =
-            "Name: " + product->getName() +
-            "\nManufacturer: " + product->getManufacturer() +
-            "\nType: " + product->getTypeAsString() +
-            "\nDiameter: " + std::to_string(product->getDiameter()) + " inch";
-
-
-        if (product->instanceOf(TIRE)) {
-          // if tire, add tire specific data
-          const auto tire = std::dynamic_pointer_cast<Tire>(product);
-          productInfo +=
-              "\nWidth: " + std::to_string(tire->getWidth()) + " mm"
-              "\nHeight: " + std::to_string(tire->getHeight()) + " mm"
-              "\nSpeed Index: " + std::string(1, tire->getSpeedIndex());
-        } else if (product->instanceOf(RIM)) {
-          // if rim, add rim specific data
-          const auto rim = std::dynamic_pointer_cast<Rim>(product);
-          productInfo +=
-              "\nWidth: " + std::to_string(rim->getWidth()) + //FIXME: add mm, inch fzo
-              "\nColor: " + rim->getColor() +
-              "\nMaterial: " + rim->getMaterialAsString();
-        }
-
-        productInfo +=
-            "\nStock Count: " + std::to_string(product->getStockCount()) +
-            "\nPrice (Individual): " + Product::convertCentsToReadable(
-              product->getPriceIndividual()) +
-            "\nPrice (Business) : " + Product::convertCentsToReadable(
-              product->getPriceBusiness());
-
-        const auto inspectMenu = std::make_shared<ChoiceMenu>("Inspect Product", fullStockMenu);
-        inspectMenu->addOption("Add stock", addStockMenu);
-        addStockMenu->setParentMenu(fullStockMenu);
-        inspectMenu->setSuffixText(productInfo);
-        inspectMenu->display();
-      });
-  }
-
   const auto stockMenu = std::make_shared<ChoiceMenu>("Stock menu");
-  stockMenu->addOption("Show full stock", fullStockMenu);
 
+  const auto fullStockMenu = createFullStockMenu();
+  const auto filteredStockMenu = createFilterMenu();
+
+  filteredStockMenu->setHandler([&filteredStockMenu, &stockMenu, this](const std::vector<std::string>& inputs) {
+    const auto filteredFullStockMenu = createFullStockMenu(inputs[0]);
+    filteredStockMenu->setParentMenu(filteredFullStockMenu);
+    filteredFullStockMenu->setParentMenu(stockMenu);
+  });
+
+
+  stockMenu->addOption("Show full stock", fullStockMenu);
+  stockMenu->addOption("Show filtered stock", filteredStockMenu);
 
   const auto mainMenu = std::make_shared<ChoiceMenu>("Main menu");
   mainMenu->addOption("View stock", stockMenu);
   mainMenu->addOption("Save changes", [this] { serialize("../mem.json.bak"); });
 
-  // Display the main menu
   mainMenu->display();
+}
+
+
+std::shared_ptr<ChoiceMenu> Program::createFullStockMenu(const std::string& filter_str) const {
+  bool filterEnabled = false;
+  if (!filter_str.empty()) { filterEnabled = true; }
+  auto fullStockMenu = std::make_shared<ChoiceMenu>("Stock menu");
+  for (const auto& product : products) {
+    if (filterEnabled) {
+      // name and filter to lowercase
+      std::string lowercaseProductName = product->getName();
+      std::ranges::transform(lowercaseProductName, lowercaseProductName.begin(), ::tolower);
+
+      std::string lowercaseFilterStr = filter_str;
+      std::ranges::transform(lowercaseFilterStr, lowercaseFilterStr.begin(), ::tolower);
+
+      if (!lowercaseProductName.contains(lowercaseFilterStr)) {
+        // Filtered out -> skip
+        continue;
+      }
+    }
+
+    fullStockMenu->addOption(product->getName(), createProductOptionHandler(product, fullStockMenu));
+  }
+  return fullStockMenu;
+}
+
+
+std::shared_ptr<SequentialMenu> Program::createFilterMenu() const {
+  auto filterMenu = std::make_shared<SequentialMenu>("Filter objects");
+  filterMenu->addCollection("Search query");
+  return filterMenu;
+}
+
+
+std::function<void()> Program::createProductOptionHandler(const std::shared_ptr<Product>& product,
+                                                          const std::shared_ptr<Menu>& parent) const {
+  return [this, product, parent]() {
+    const auto changeSpecificStockMenu = createChangeStockMenu(product);
+
+    const std::string productInfo = buildProductInfo(product);
+
+    const auto inspectMenu = std::make_shared<ChoiceMenu>("Inspect Product", nullptr);
+    inspectMenu->addOption("Add stock", changeSpecificStockMenu);
+    inspectMenu->setSuffixText(productInfo);
+    inspectMenu->setParentMenu(parent);
+    changeSpecificStockMenu->setParentMenu(parent);
+    inspectMenu->display();
+  };
+}
+
+
+std::shared_ptr<SequentialMenu> Program::createChangeStockMenu(const std::shared_ptr<Product>& product) const {
+  // NOLINT(*-convert-member-functions-to-static)
+  auto changeSpecificStockMenu = std::make_shared<SequentialMenu>("Stock menu");
+  changeSpecificStockMenu->addCollection("Amount of stock to add");
+  changeSpecificStockMenu->setHandler([product](const std::vector<std::string>& inputs) {
+    product->setStockCount(product->getStockCount() + std::stoi(inputs[0]));
+  });
+  return changeSpecificStockMenu;
+}
+
+
+std::string Program::buildProductInfo(const std::shared_ptr<Product>& product) {
+  std::string info =
+      "Name: " + product->getName() +
+      "\nManufacturer: " + product->getManufacturer() +
+      "\nType: " + product->getTypeAsString() +
+      "\nDiameter: " + std::to_string(product->getDiameter()) + " (inch)";
+
+  if (product->instanceOf(TIRE)) {
+    const auto tire = std::dynamic_pointer_cast<Tire>(product);
+    info += "\nWidth: " + std::to_string(tire->getWidth()) + " (mm)"
+        + "\nHeight: " + std::to_string(tire->getHeight()) + " (mm)"
+        + "\nSpeed Index: " + std::string(1, tire->getSpeedIndex());
+  } else if (product->instanceOf(RIM)) {
+    const auto rim = std::dynamic_pointer_cast<Rim>(product);
+    info += "\nWidth: " + std::to_string(rim->getWidth()) + " (mm)"
+        + "\nColor: " + rim->getColor()
+        + "\nMaterial: " + rim->getMaterialAsString();
+  }
+
+  info += "\nStock Count: " + std::to_string(product->getStockCount()) +
+      "\nPrice (Individual): " + Product::convertCentsToReadable(product->getPriceIndividual()) +
+      "\nPrice (Business): " + Product::convertCentsToReadable(product->getPriceBusiness());
+
+  return info;
 }
 
 

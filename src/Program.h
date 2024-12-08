@@ -55,6 +55,13 @@ class Program {
     */
     void initMenu() const;
 
+    std::function<void()> createProductOptionHandler(const std::shared_ptr<Product>& product,
+                                                     const std::shared_ptr<Menu>& parent) const;
+    std::shared_ptr<ChoiceMenu> createFullStockMenu(const std::string& filter_str = "") const;
+    std::shared_ptr<SequentialMenu> createFilterMenu() const;
+    std::shared_ptr<SequentialMenu> createChangeStockMenu(const std::shared_ptr<Product>& product) const;
+    static std::string buildProductInfo(const std::shared_ptr<Product>& product);
+
   public:
     /**
     * @brief Handles full software initialization.

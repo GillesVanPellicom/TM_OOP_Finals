@@ -1,124 +1,124 @@
 {
-  "products": [
-    {
-      "diameter": 18,
-      "height": 55,
-      "manufacturer": "Goodyear",
-      "name": "WinterGrip X200",
-      "priceBusiness": 11550,
-      "priceIndividual": 12075,
-      "speedIndex": 72,
-      "stockCount": 50,
-      "type": "tire",
-      "width": 225
-    },
-    {
-      "diameter": 16,
-      "height": 60,
-      "manufacturer": "Michelin",
-      "name": "AllSeason Pro",
-      "priceBusiness": 8800,
-      "priceIndividual": 9500,
-      "speedIndex": 84,
-      "stockCount": 100,
-      "type": "tire",
-      "width": 205
-    },
-    {
-      "diameter": 19,
-      "height": 40,
-      "manufacturer": "Dunlop",
-      "name": "SportMaxx Ultra",
-      "priceBusiness": 13500,
-      "priceIndividual": 14500,
-      "speedIndex": 86,
-      "stockCount": 30,
-      "type": "tire",
-      "width": 245
-    },
-    {
-      "diameter": 15,
-      "height": 65,
-      "manufacturer": "Bridgestone",
-      "name": "EcoDrive E300",
-      "priceBusiness": 7550,
-      "priceIndividual": 8000,
-      "speedIndex": 83,
-      "stockCount": 75,
-      "type": "tire",
-      "width": 185
-    },
-    {
-      "diameter": 20,
-      "height": 35,
-      "manufacturer": "Continental",
-      "name": "RoadMaster R500",
-      "priceBusiness": 19000,
-      "priceIndividual": 20000,
-      "speedIndex": 89,
-      "stockCount": 20,
-      "type": "tire",
-      "width": 275
-    },
-    {
-      "color": "Silver",
-      "diameter": 18,
-      "manufacturer": "BBS",
-      "material": "aluminium",
-      "name": "AlloyStyle A500",
-      "priceBusiness": 24000,
-      "priceIndividual": 25000,
-      "stockCount": 40,
-      "type": "rim",
-      "width": 8.5
-    },
-    {
-      "color": "Black",
-      "diameter": 16,
-      "manufacturer": "OZ Racing",
-      "material": "steel",
-      "name": "SteelBasic S200",
-      "priceBusiness": 7500,
-      "priceIndividual": 8000,
-      "stockCount": 100,
-      "type": "rim",
-      "width": 6.5
-    },
-    {
-      "color": "Matte Black",
-      "diameter": 19,
-      "manufacturer": "Enkei",
-      "material": "aluminium",
-      "name": "CarbonXtreme C800",
-      "priceBusiness": 53000,
-      "priceIndividual": 55000,
-      "stockCount": 10,
-      "type": "rim",
-      "width": 9.0
-    },
-    {
-      "color": "Chrome",
-      "diameter": 17,
-      "manufacturer": "American Racing",
-      "material": "aluminium",
-      "name": "ChromeClassic R300",
-      "priceBusiness": 19000,
-      "priceIndividual": 20000,
-      "stockCount": 25,
-      "type": "rim",
-      "width": 7.0
-    },
-    {
-      "color": "Gunmetal",
-      "diameter": 20,
-      "manufacturer": "Method Race Wheels",
-      "material": "steel",
-      "name": "OffRoad Master OR900",
-      "priceBusiness": 34000,
-      "priceIndividual": 35000,
-      "stockCount": 15,
-      "type": "rim",
-      "width": 10.0
-    }
-  ]
+    "products": [
+        {
+            "diameter": 18,
+            "height": 55,
+            "manufacturer": "Goodyear",
+            "name": "WinterGrip X200",
+            "priceBusiness": 11550,
+            "priceIndividual": 12075,
+            "speedIndex": 72,
+            "stockCount": 63,
+            "type": "tire",
+            "width": 225
+        },
+        {
+            "diameter": 16,
+            "height": 60,
+            "manufacturer": "Michelin",
+            "name": "AllSeason Pro",
+            "priceBusiness": 8800,
+            "priceIndividual": 9500,
+            "speedIndex": 84,
+            "stockCount": 100,
+            "type": "tire",
+            "width": 205
+        },
+        {
+            "diameter": 19,
+            "height": 40,
+            "manufacturer": "Dunlop",
+            "name": "SportMaxx Ultra",
+            "priceBusiness": 13500,
+            "priceIndividual": 14500,
+            "speedIndex": 86,
+            "stockCount": 30,
+            "type": "tire",
+            "width": 245
+        },
+        {
+            "diameter": 15,
+            "height": 65,
+            "manufacturer": "Bridgestone",
+            "name": "EcoDrive E300",
+            "priceBusiness": 7550,
+            "priceIndividual": 8000,
+            "speedIndex": 83,
+            "stockCount": 75,
+            "type": "tire",
+            "width": 185
+        },
+        {
+            "diameter": 20,
+            "height": 35,
+            "manufacturer": "Continental",
+            "name": "RoadMaster R500",
+            "priceBusiness": 19000,
+            "priceIndividual": 20000,
+            "speedIndex": 89,
+            "stockCount": 20,
+            "type": "tire",
+            "width": 275
+        },
+        {
+            "color": "Silver",
+            "diameter": 18,
+            "manufacturer": "BBS",
+            "material": "aluminium",
+            "name": "AlloyStyle A500",
+            "priceBusiness": 24000,
+            "priceIndividual": 25000,
+            "stockCount": 40,
+            "type": "rim",
+            "width": 8.0
+        },
+        {
+            "color": "Black",
+            "diameter": 16,
+            "manufacturer": "OZ Racing",
+            "material": "steel",
+            "name": "SteelBasic S200",
+            "priceBusiness": 7500,
+            "priceIndividual": 8000,
+            "stockCount": 100,
+            "type": "rim",
+            "width": 6.0
+        },
+        {
+            "color": "Matte Black",
+            "diameter": 19,
+            "manufacturer": "Enkei",
+            "material": "aluminium",
+            "name": "CarbonXtreme C800",
+            "priceBusiness": 53000,
+            "priceIndividual": 55000,
+            "stockCount": 10,
+            "type": "rim",
+            "width": 9.0
+        },
+        {
+            "color": "Chrome",
+            "diameter": 17,
+            "manufacturer": "American Racing",
+            "material": "aluminium",
+            "name": "ChromeClassic R300",
+            "priceBusiness": 19000,
+            "priceIndividual": 20000,
+            "stockCount": 25,
+            "type": "rim",
+            "width": 7.0
+        },
+        {
+            "color": "Gunmetal",
+            "diameter": 20,
+            "manufacturer": "Method Race Wheels",
+            "material": "steel",
+            "name": "OffRoad Master OR900",
+            "priceBusiness": 34000,
+            "priceIndividual": 35000,
+            "stockCount": 15,
+            "type": "rim",
+            "width": 10.0
+        }
+    ]
 }

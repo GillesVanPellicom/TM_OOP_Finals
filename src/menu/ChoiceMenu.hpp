@@ -43,14 +43,15 @@ class ChoiceMenu final : public Menu {
      * @param submenu menu to be opened
      */
     void addOption(std::string description, const std::shared_ptr<Menu>& submenu) {
+      const auto parent = std::shared_ptr<Menu>(
+        this,
+        [](Menu*) {
+          // Prevent ownership transfer
+        });
+
+      submenu->setParentMenu(parent);
       options[optionCount++] = {
-        std::move(description), [submenu, this]() {
-          const auto parent = std::shared_ptr<Menu>(
-            this,
-            [](Menu*) {
-              // Prevent ownership transfer
-            });
-          submenu->setParentMenu(parent);
+        std::move(description), [submenu]() {
           submenu->display();
         }
       };
@@ -95,11 +96,10 @@ class ChoiceMenu final : public Menu {
             exit(0);
           }
         }
-        waitForAnyKey(true);
       }
     }
 
-  // suffixText
+    // suffixText
     [[nodiscard]] std::string getSuffixText() const {
       return suffixText;
     }
