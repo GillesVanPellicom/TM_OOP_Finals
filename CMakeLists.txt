@@ -29,6 +29,8 @@ set(SOURCE_FILES src/main.cpp
         src/menu/SequentialMenu.hpp
         src/object/user/User.cpp
         src/object/user/User.h
+        src/Program.cpp
+        src/Program.h
 )
 
 # Executable Creation

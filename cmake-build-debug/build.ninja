@@ -91,6 +91,13 @@ build CMakeFiles/TM_OOP_Finals.dir/src/object/user/User.cpp.o: CXX_COMPILER__TM_
   OBJECT_DIR = CMakeFiles/TM_OOP_Finals.dir
   OBJECT_FILE_DIR = CMakeFiles/TM_OOP_Finals.dir/src/object/user
 
+build CMakeFiles/TM_OOP_Finals.dir/src/Program.cpp.o: CXX_COMPILER__TM_OOP_Finals_unscanned_Debug /Users/gvp/CLionProjects/TM_OOP_Finals/src/Program.cpp || cmake_object_order_depends_target_TM_OOP_Finals
+  DEP_FILE = CMakeFiles/TM_OOP_Finals.dir/src/Program.cpp.o.d
+  FLAGS = -pedantic -Wall -Werror -g -std=gnu++2b -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX15.1.sdk -fcolor-diagnostics -fsanitize=address -fsanitize=undefined
+  INCLUDES = -I/Users/gvp/CLionProjects/TM_OOP_Finals/src/lib/nlohmann
+  OBJECT_DIR = CMakeFiles/TM_OOP_Finals.dir
+  OBJECT_FILE_DIR = CMakeFiles/TM_OOP_Finals.dir/src
+
 
 # =============================================================================
 # Link build statements for EXECUTABLE target TM_OOP_Finals
@@ -99,7 +106,7 @@ build CMakeFiles/TM_OOP_Finals.dir/src/object/user/User.cpp.o: CXX_COMPILER__TM_
 #############################################
 # Link the executable TM_OOP_Finals
 
-build TM_OOP_Finals: CXX_EXECUTABLE_LINKER__TM_OOP_Finals_Debug CMakeFiles/TM_OOP_Finals.dir/src/main.cpp.o CMakeFiles/TM_OOP_Finals.dir/src/object/product/Product.cpp.o CMakeFiles/TM_OOP_Finals.dir/src/object/product/tire/Tire.cpp.o CMakeFiles/TM_OOP_Finals.dir/src/object/product/rim/Rim.cpp.o CMakeFiles/TM_OOP_Finals.dir/src/object/customer/Customer.cpp.o CMakeFiles/TM_OOP_Finals.dir/src/object/user/User.cpp.o
+build TM_OOP_Finals: CXX_EXECUTABLE_LINKER__TM_OOP_Finals_Debug CMakeFiles/TM_OOP_Finals.dir/src/main.cpp.o CMakeFiles/TM_OOP_Finals.dir/src/object/product/Product.cpp.o CMakeFiles/TM_OOP_Finals.dir/src/object/product/tire/Tire.cpp.o CMakeFiles/TM_OOP_Finals.dir/src/object/product/rim/Rim.cpp.o CMakeFiles/TM_OOP_Finals.dir/src/object/customer/Customer.cpp.o CMakeFiles/TM_OOP_Finals.dir/src/object/user/User.cpp.o CMakeFiles/TM_OOP_Finals.dir/src/Program.cpp.o
   FLAGS = -pedantic -Wall -Werror -g -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX15.1.sdk
   LINK_FLAGS = -fsanitize=address -fsanitize=undefined
   OBJECT_DIR = CMakeFiles/TM_OOP_Finals.dir
