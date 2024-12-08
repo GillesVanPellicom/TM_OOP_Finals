@@ -25,12 +25,12 @@ class Product {
 
   std::string name [[maybe_unused]];
   std::string manufacturer [[maybe_unused]];
-  std::uint32_t diameter [[maybe_unused]]; // in mm
-  ProductType type [[maybe_unused]];
+  std::uint32_t diameter{}; // in mm
+  ProductType type{};
 
-  std::uint32_t stockCount [[maybe_unused]]; // in ℕ_{0}
-  std::uint64_t priceIndividual [[maybe_unused]]; // in cents, euro
-  std::uint64_t priceBusiness [[maybe_unused]]; // in cents, euro
+  std::uint32_t stockCount{}; // in ℕ_{0}
+  std::uint64_t priceIndividual{}; // in cents, euro
+  std::uint64_t priceBusiness{}; // in cents, euro
 
   public:
     // ╔════════════════════════════════════════╗
@@ -139,11 +139,21 @@ class Product {
       }
     }
 
-
-    // Virtual Destructor for Polymorphism
     virtual ~Product() = default;
 
+    // ╔════════════════════════════════════════╗
+    // ║               functions                ║
+    // ╚════════════════════════════════════════╝
+
+    /**
+     * @brief Serializes this specific object, used in recursive serialization.
+     * @return Object as JSON
+     */
     [[nodiscard]] virtual nlohmann::json serialize() = 0;
+
+    /**
+   * @brief Deserializes this specific object, used in recursive deserialization.
+   */
     virtual void deserialize(const nlohmann::json& j) = 0;
 };
 

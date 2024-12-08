@@ -3,9 +3,7 @@
 // ║ Description  : Lorem ipsum dolor sit amet                                        ║
 // ║                Lorem ipsum dolor sit amet                                        ║
 // ║ Author(s)    : "Gilles Van pellicom" <r0997008@student.thomasmore.be>            ║
-// ║ Date         : 2024/12/07                                                        ║                
-// ║ Version      : 1.0                                                               ║
-// ║ License      : GPL-3.0                                                           ║
+// ║ Date         : 2024/12/07                                                        ║
 // ╚══════════════════════════════════════════════════════════════════════════════════╝
 
 #ifndef TIRE_H
@@ -15,7 +13,7 @@
 #include "../Product.h"
 
 
-class Tire : public Product {
+class Tire final : public Product {
   std::uint32_t width [[maybe_unused]]; // in mm
   std::uint32_t height [[maybe_unused]]; // in mm
   char speedIndex [[maybe_unused]];
@@ -80,7 +78,19 @@ class Tire : public Product {
 
     ~Tire() override = default;
 
+    // ╔════════════════════════════════════════╗
+    // ║               functions                ║
+    // ╚════════════════════════════════════════╝
+
+    /**
+      * @brief Serializes this specific object, used in recursive serialization.
+      * @return Object as JSON
+      */
     [[nodiscard]] nlohmann::json serialize() override;
+
+    /**
+      * @brief Deserializes this specific object, used in recursive deserialization.
+      */
     void deserialize(const nlohmann::json& j) override;
 };
 
