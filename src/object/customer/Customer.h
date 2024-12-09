@@ -10,7 +10,10 @@
 #define CUSTOMER_H
 
 #include <json.hpp>
+#include <utility>
 #include <vector>
+
+#include "../../util/IdGen.hpp"
 
 
 class Customer {
@@ -18,6 +21,8 @@ class Customer {
   std::string lastName;
   std::string address;
   bool businessCustomer = false;
+
+  UUIDGen::UUID uuid = UUIDGen::generateUUID();
 
   public:
     // ╔════════════════════════════════════════╗
@@ -34,7 +39,7 @@ class Customer {
         businessCustomer(business_customer) {
     }
 
-    Customer(const nlohmann::json& j) {
+    explicit Customer(const nlohmann::json& j) {
       deserialize(j);
     }
 
@@ -72,6 +77,14 @@ class Customer {
     }
     void setBusinessCustomer(const bool is_business_customer) {
       businessCustomer = is_business_customer;
+    }
+
+    // UUID
+    [[nodiscard]] UUIDGen::UUID getUUID() const {
+      return uuid;
+    }
+    void setUUID(const UUIDGen::UUID& uuid) {
+      this->uuid = uuid;
     }
 
     // ╔════════════════════════════════════════╗

@@ -49,7 +49,7 @@ class Rim final : public Product {
         material(material) {
     }
 
-    Rim(const nlohmann::json& j): Product() {
+    explicit Rim(const nlohmann::json& j): Product() {
       Rim::deserialize(j);
     }
 

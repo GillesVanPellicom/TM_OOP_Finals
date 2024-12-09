@@ -1,6 +1,114 @@
 {
+    "customers": [
+        {
+            "UUID": "ef735f99-5877-4755-95a4-cc634c328668",
+            "address": "22 Watery Lane, Birmingham",
+            "business": false,
+            "firstName": "Thomas",
+            "lastName": "Shelby"
+        },
+        {
+            "UUID": "887d45cc-77f2-4d82-b343-2c72675449e6",
+            "address": "Oxford University, London",
+            "business": true,
+            "firstName": "James",
+            "lastName": "Moriarty"
+        },
+        {
+            "UUID": "3c1de54a-d655-419b-ba96-7c574587ed23",
+            "address": "207 Arroyo Ave., Albuquerque, NM",
+            "business": false,
+            "firstName": "Gustavo",
+            "lastName": "Fring"
+        },
+        {
+            "UUID": "b24f4287-fb9e-4fda-8604-ee4feece83bb",
+            "address": "505 Pine Ct",
+            "business": false,
+            "firstName": "Hannah",
+            "lastName": "Blue"
+        },
+        {
+            "UUID": "37a6d017-c188-4938-bd71-35303b2e736a",
+            "address": "101 Daffodil Rd",
+            "business": true,
+            "firstName": "Thomas",
+            "lastName": "Anderson"
+        },
+        {
+            "UUID": "75c2439c-1d40-4dbe-a70e-a0c4187117b3",
+            "address": "606 Victory Mansions",
+            "business": false,
+            "firstName": "Winston",
+            "lastName": "Smith"
+        },
+        {
+            "UUID": "26faef25-9fb3-45e4-b8ad-f0723ec0cdfd",
+            "address": "Calidan",
+            "business": true,
+            "firstName": "Paul",
+            "lastName": "Atreides"
+        },
+        {
+            "UUID": "7f37d87e-dfab-4419-ba34-a17329b75c5d",
+            "address": "707 Spruce St",
+            "business": false,
+            "firstName": "Aberama",
+            "lastName": "Gold"
+        },
+        {
+            "UUID": "a02e5ee2-f410-4bd2-99d5-867608e949b3",
+            "address": "21 Leftburough, Port Royal",
+            "business": false,
+            "firstName": "William",
+            "lastName": "Turner"
+        },
+        {
+            "UUID": "40be5f1a-1934-4585-8de1-26553b1d41ba",
+            "address": "Quarters no. 382, DS9",
+            "business": false,
+            "firstName": "Benjamin",
+            "lastName": "Sisko"
+        },
+        {
+            "UUID": "f7d1dae9-4722-4c9c-ba4d-8ad5e234e64b",
+            "address": "123 Wonderland Ave",
+            "business": true,
+            "firstName": "Alice",
+            "lastName": "Kingsleigh"
+        },
+        {
+            "UUID": "95d1c116-d045-44b7-97b7-f9ac29c77400",
+            "address": "2525 Hemlock Pl",
+            "business": true,
+            "firstName": "Ellen",
+            "lastName": "Ripley"
+        },
+        {
+            "UUID": "e405589c-e549-47fc-ac47-2d2b7e486f60",
+            "address": "2626 Aspen St",
+            "business": false,
+            "firstName": "Cara",
+            "lastName": "Mitchell"
+        },
+        {
+            "UUID": "e105fa15-08f5-4587-921d-b2c2e18b71c0",
+            "address": "the Bebop",
+            "business": true,
+            "firstName": "Spike",
+            "lastName": "Spiegel"
+        },
+        {
+            "UUID": "c06b4ac5-5ad9-4f51-909d-f1123a759907",
+            "address": "2727 Walnut Ave, Colorado",
+            "business": false,
+            "firstName": "Jack",
+            "lastName": "O'Neill"
+        }
+    ],
     "products": [
         {
+            "UUID": "c491d4e3-985d-4b9b-873f-6f0b11c42c7e",
             "diameter": 18,
             "height": 55,
             "manufacturer": "Goodyear",
@@ -13,6 +121,7 @@
             "width": 225
         },
         {
+            "UUID": "9325e97e-7a11-40d3-aa37-2f7e8a6b7364",
             "diameter": 16,
             "height": 60,
             "manufacturer": "Michelin",
@@ -25,6 +134,7 @@
             "width": 205
         },
         {
+            "UUID": "5168d2a6-2e3f-444d-8992-c49973172ba3",
             "diameter": 19,
             "height": 40,
             "manufacturer": "Dunlop",
@@ -37,6 +147,7 @@
             "width": 245
         },
         {
+            "UUID": "27f577c1-f6a3-4b80-a7e0-718a2c08dd58",
             "diameter": 15,
             "height": 65,
             "manufacturer": "Bridgestone",
@@ -49,6 +160,7 @@
             "width": 185
         },
         {
+            "UUID": "38017e89-0101-49b5-92d1-c268152bec28",
             "diameter": 20,
             "height": 35,
             "manufacturer": "Continental",
@@ -61,6 +173,7 @@
             "width": 275
         },
         {
+            "UUID": "7557de7c-c169-4f0c-b71a-d9fd71bd5252",
             "color": "Silver",
             "diameter": 18,
             "manufacturer": "BBS",
@@ -73,6 +186,7 @@
             "width": 8.0
         },
         {
+            "UUID": "08e7bf2c-1015-422c-a7e8-cc8d361110b3",
             "color": "Black",
             "diameter": 16,
             "manufacturer": "OZ Racing",
@@ -85,6 +199,7 @@
             "width": 6.0
         },
         {
+            "UUID": "63732fad-ced7-4ffd-bcc1-e2b7fdec1353",
             "color": "Matte Black",
             "diameter": 19,
             "manufacturer": "Enkei",
@@ -97,6 +212,7 @@
             "width": 9.0
         },
         {
+            "UUID": "1042b707-142a-41d0-b723-d47961cf0590",
             "color": "Chrome",
             "diameter": 17,
             "manufacturer": "American Racing",
@@ -109,6 +225,7 @@
             "width": 7.0
         },
         {
+            "UUID": "ba468dc5-2e7a-42b3-9d75-13a60999d775",
             "color": "Gunmetal",
             "diameter": 20,
             "manufacturer": "Method Race Wheels",

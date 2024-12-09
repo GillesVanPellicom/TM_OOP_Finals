@@ -44,7 +44,8 @@ class Tire final : public Product {
         speedIndex(speed_index) {
     }
 
-    Tire(const nlohmann::json& j): Product() {
+
+    explicit Tire(const nlohmann::json& j): Product() {
       Tire::deserialize(j);
     }
 

@@ -15,7 +15,9 @@ nlohmann::json Customer::serialize() {
     {"firstName", this->getFirstName()},
     {"lastName", this->getLastName()},
     {"address", this->getAddress()},
-    {"business", this->isBusinessCustomer()}
+    {"business", this->isBusinessCustomer()},
+    {"UUID", this->getUUID()}
+
   };
   return j;
 }
@@ -25,4 +27,5 @@ void Customer::deserialize(const nlohmann::json& j) {
   this->setLastName(j.at("lastName").get<std::string>());
   this->setAddress(j.at("address").get<std::string>());
   this->setBusinessCustomer(j.at("business").get<bool>());
+  this->setUUID(j.at("UUID").get<std::string>());
 }

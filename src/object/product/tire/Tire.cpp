@@ -21,10 +21,12 @@ nlohmann::json Tire::serialize() {
     {"priceBusiness", this->getPriceBusiness()},
     {"width", this->getWidth()},
     {"height", this->getHeight()},
-    {"speedIndex", this->getSpeedIndex()}
+    {"speedIndex", this->getSpeedIndex()},
+    {"UUID", this->getUUID()}
   };
   return j;
 }
+
 
 void Tire::deserialize(const nlohmann::json& j) {
   this->setTypeAsString(j.at("type").get<std::string>());
@@ -37,4 +39,5 @@ void Tire::deserialize(const nlohmann::json& j) {
   this->setWidth(j.at("width").get<std::uint32_t>());
   this->setHeight(j.at("height").get<std::uint32_t>());
   this->setSpeedIndex(j.at("speedIndex").get<char>());
+  this->setUUID(j.at("UUID").get<std::string>());
 }

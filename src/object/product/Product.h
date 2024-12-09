@@ -12,6 +12,9 @@
 
 #include <string>
 #include <json.hpp>
+#include <utility>
+
+#include "../../util/IdGen.hpp"
 
 enum ProductType {
   TIRE,
@@ -31,6 +34,8 @@ class Product {
   std::uint32_t stockCount{}; // in ℕ_{0}
   std::uint64_t priceIndividual{}; // in cents, euro
   std::uint64_t priceBusiness{}; // in cents, euro
+
+  UUIDGen::UUID uuid = UUIDGen::generateUUID();
 
   public:
     // ╔════════════════════════════════════════╗
@@ -129,6 +134,9 @@ class Product {
     [[nodiscard]] bool instanceOf(ProductType type) const {
       return this->type == type;
     }
+    [[nodiscard]] ProductType getType() const {
+      return type;
+    }
     [[nodiscard]] std::string getTypeAsString() const {
       switch (this->type) {
         case TIRE: { return "tire"; }
@@ -144,6 +152,14 @@ class Product {
       } else {
         this->type = static_cast<ProductType>(-1); // Invalid type
       }
+    }
+
+    // UUID
+    [[nodiscard]] UUIDGen::UUID getUUID() const {
+      return uuid;
+    }
+    void setUUID(const UUIDGen::UUID& uuid) {
+      this->uuid = uuid;
     }
 
     virtual ~Product() = default;

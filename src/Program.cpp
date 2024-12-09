@@ -15,23 +15,23 @@ void Program::serialize(const std::string& filePath) const {
 
   // Products
   if (!products.empty()) {
-    nlohmann::json products_array = nlohmann::json::array();
+    nlohmann::json a = nlohmann::json::array();
     for (const auto& p : products) {
       // Add to the products array
-      products_array.push_back(p->serialize());
+      a.push_back(p->serialize());
     }
-    j["products"] = products_array;
+    j["products"] = a;
   }
   // END Products
 
   // Customers
-  if (!products.empty()) {
-    nlohmann::json customers_array = nlohmann::json::array();
+  if (!customers.empty()) {
+    nlohmann::json a = nlohmann::json::array();
     for (const auto& p : customers) {
       // Add to the customers array
-      customers_array.push_back(p->serialize());
+      a.push_back(p->serialize());
     }
-    j["customers"] = customers_array;
+    j["customers"] = a;
   }
   // END Customers
 
@@ -62,12 +62,12 @@ void Program::deserialize(const std::string& filePath) {
 
   // Products
   if (j.contains("products") && j["products"].is_array()) {
-    for (const auto& product_json : j["products"]) {
-      if (auto type = product_json.at("type").get<std::string>();
+    for (const auto& json : j["products"]) {
+      if (auto type = json.at("type").get<std::string>();
         type == "tire") {
-        products.emplace_back(std::make_shared<Tire>(product_json));
+        products.emplace_back(std::make_shared<Tire>(json));
       } else if (type == "rim") {
-        products.emplace_back(std::make_shared<Rim>(product_json));
+        products.emplace_back(std::make_shared<Rim>(json));
       }
     }
   }
@@ -75,8 +75,8 @@ void Program::deserialize(const std::string& filePath) {
 
   // Customers
   if (j.contains("customers") && j["customers"].is_array()) {
-    for (const auto& customer_json : j["customers"]) {
-        customers.emplace_back(std::make_shared<Customer>(customer_json));
+    for (const auto& json : j["customers"]) {
+      customers.emplace_back(std::make_shared<Customer>(json));
     }
   }
   // END Customers
@@ -106,12 +106,12 @@ void Program::setupSession() {
       permissionLevel = ADMIN;
     }
 
-
     // Be nice to the user
     std::cout << "Welcome " << users[cuid]->getUserName() << "\n\n" << std::endl;
     break;
   }
 }
+
 
 void Program::removeProduct(const std::shared_ptr<Product>& productToRemove) {
   std::erase_if(products,
@@ -303,6 +303,7 @@ std::shared_ptr<ChoiceMenu> Program::createAddStockMenu() {
   _menu->addOption("Add rim", rimMenu);
   return _menu;
 }
+
 
 std::shared_ptr<ChoiceMenu> Program::createFullCustomerMenu() {
   auto _menu = std::make_shared<ChoiceMenu>("Customer menu");

@@ -21,7 +21,8 @@ nlohmann::json Rim::serialize() {
     {"priceBusiness", this->getPriceBusiness()},
     {"width", this->getWidth()},
     {"color", this->getColor()},
-    {"material", this->getMaterialAsString()}
+    {"material", this->getMaterialAsString()},
+    {"UUID", this->getUUID()}
   };
   return j;
 }
@@ -37,4 +38,5 @@ void Rim::deserialize(const nlohmann::json& j) {
   this->setWidth(j.at("width").get<std::uint32_t>());
   this->setColor(j.at("color").get<std::string>());
   this->setMaterialAsString(j.at("material").get<std::string>());
+  this->setUUID(j.at("UUID").get<std::string>());
 }

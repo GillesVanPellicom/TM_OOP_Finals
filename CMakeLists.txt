@@ -31,6 +31,8 @@ set(SOURCE_FILES src/main.cpp
         src/object/user/User.h
         src/Program.cpp
         src/Program.h
+        src/object/invoice/Invoice.cpp
+        src/object/invoice/Invoice.h
 )
 
 # Executable Creation
