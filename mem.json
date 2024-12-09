@@ -1,4 +1,96 @@
 {
+    "customers": [
+        {
+            "address": "22 Watery Lane, Birmingham",
+            "business": false,
+            "firstName": "Thomas",
+            "lastName": "Shelby"
+        },
+        {
+            "address": "Oxford University, London",
+            "business": true,
+            "firstName": "James",
+            "lastName": "Moriarty"
+        },
+        {
+            "address": "207 Arroyo Ave., Albuquerque, NM",
+            "business": false,
+            "firstName": "Gustavo",
+            "lastName": "Fring"
+        },
+        {
+            "address": "505 Pine Ct",
+            "business": false,
+            "firstName": "Hannah",
+            "lastName": "Blue"
+        },
+        {
+            "address": "101 Daffodil Rd",
+            "business": true,
+            "firstName": "Thomas",
+            "lastName": "Anderson"
+        },
+        {
+            "address": "606 Victory Mansions",
+            "business": false,
+            "firstName": "Winston",
+            "lastName": "Smith"
+        },
+        {
+            "address": "Calidan",
+            "business": true,
+            "firstName": "Paul",
+            "lastName": "Atreides"
+        },
+        {
+            "address": "707 Spruce St",
+            "business": false,
+            "firstName": "Aberama",
+            "lastName": "Gold"
+        },
+        {
+            "address": "21 Leftburough, Port Royal",
+            "business": false,
+            "firstName": "William",
+            "lastName": "Turner"
+        },
+        {
+            "address": "Quarters no. 382, DS9",
+            "business": false,
+            "firstName": "Benjamin",
+            "lastName": "Sisko"
+        },
+        {
+            "address": "123 Wonderland Ave",
+            "business": true,
+            "firstName": "Alice",
+            "lastName": "Kingsleigh"
+        },
+        {
+            "address": "2525 Hemlock Pl",
+            "business": true,
+            "firstName": "Ellen",
+            "lastName": "Ripley"
+        },
+        {
+            "address": "2626 Aspen St",
+            "business": false,
+            "firstName": "Cara",
+            "lastName": "Mitchell"
+        },
+        {
+            "address": "the Bebop",
+            "business": true,
+            "firstName": "Spike",
+            "lastName": "Spiegel"
+        },
+        {
+            "address": "2727 Walnut Ave, Colorado",
+            "business": false,
+            "firstName": "Jack",
+            "lastName": "O'Neill"
+        }
+    ],
     "products": [
         {
             "diameter": 18,

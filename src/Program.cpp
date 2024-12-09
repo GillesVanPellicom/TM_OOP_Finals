@@ -24,6 +24,17 @@ void Program::serialize(const std::string& filePath) const {
   }
   // END Products
 
+  // Customers
+  if (!products.empty()) {
+    nlohmann::json customers_array = nlohmann::json::array();
+    for (const auto& p : customers) {
+      // Add to the customers array
+      customers_array.push_back(p->serialize());
+    }
+    j["customers"] = customers_array;
+  }
+  // END Customers
+
 
   // Write the JSON to a file
   std::ofstream outputFile(filePath);
@@ -54,15 +65,21 @@ void Program::deserialize(const std::string& filePath) {
     for (const auto& product_json : j["products"]) {
       if (auto type = product_json.at("type").get<std::string>();
         type == "tire") {
-        const auto tire = std::make_shared<Tire>(product_json);
-        products.emplace_back(tire);
+        products.emplace_back(std::make_shared<Tire>(product_json));
       } else if (type == "rim") {
-        const auto rim = std::make_shared<Rim>(product_json);
-        products.emplace_back(rim);
+        products.emplace_back(std::make_shared<Rim>(product_json));
       }
     }
   }
   // END Products
+
+  // Customers
+  if (j.contains("customers") && j["customers"].is_array()) {
+    for (const auto& customer_json : j["customers"]) {
+        customers.emplace_back(std::make_shared<Customer>(customer_json));
+    }
+  }
+  // END Customers
 
 
   std::cout << "Loading from memory completed.\n" << std::endl;
@@ -574,22 +591,6 @@ void Program::init() {
   // FIXME: dev stuff, remove when serialization works
   users["GYLS"] = std::make_shared<User>("Gilles", ADMIN);
   users["ALSTY"] = std::make_shared<User>("Alec", EMPLOYEE);
-
-  customers.emplace_back(std::make_shared<Customer>("Thomas", "Shelby", "22 Watery Lane, Birmingham", false));
-  customers.emplace_back(std::make_shared<Customer>("James", "Moriarty", "Oxford University, London", true));
-  customers.emplace_back(std::make_shared<Customer>("Gustavo", "Fring", "207 Arroyo Ave., Albuquerque, NM", false));
-  customers.emplace_back(std::make_shared<Customer>("Hannah", "Blue", "505 Pine Ct", false));
-  customers.emplace_back(std::make_shared<Customer>("Thomas", "Anderson", "101 Daffodil Rd", true));
-  customers.emplace_back(std::make_shared<Customer>("Winston", "Smith", "606 Victory Mansions", false));
-  customers.emplace_back(std::make_shared<Customer>("Paul", "Atreides", "Calidan", true));
-  customers.emplace_back(std::make_shared<Customer>("Aberama", "Gold", "707 Spruce St", false));
-  customers.emplace_back(std::make_shared<Customer>("William", "Turner", "21 Leftburough, Port Royal", false));
-  customers.emplace_back(std::make_shared<Customer>("Benjamin", "Sisko", "Quarters no. 382, DS9", false));
-  customers.emplace_back(std::make_shared<Customer>("Alice", "Kingsleigh", "123 Wonderland Ave", true));
-  customers.emplace_back(std::make_shared<Customer>("Ellen", "Ripley", "2525 Hemlock Pl", true));
-  customers.emplace_back(std::make_shared<Customer>("Cara", "Mitchell", "2626 Aspen St", false));
-  customers.emplace_back(std::make_shared<Customer>("Spike", "Spiegel", "the Bebop", true));
-  customers.emplace_back(std::make_shared<Customer>("Jack", "O'Neill", "2727 Walnut Ave, Colorado", false));
 
   setupSession();
   initMenu();

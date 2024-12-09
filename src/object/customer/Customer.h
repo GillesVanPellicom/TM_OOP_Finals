@@ -9,6 +9,7 @@
 #ifndef CUSTOMER_H
 #define CUSTOMER_H
 
+#include <json.hpp>
 #include <vector>
 
 
@@ -31,6 +32,10 @@ class Customer {
         lastName(std::move(last_name)),
         address(std::move(address)),
         businessCustomer(business_customer) {
+    }
+
+    Customer(const nlohmann::json& j) {
+      deserialize(j);
     }
 
     // ╔════════════════════════════════════════╗
@@ -68,6 +73,21 @@ class Customer {
     void setBusinessCustomer(const bool is_business_customer) {
       businessCustomer = is_business_customer;
     }
+
+    // ╔════════════════════════════════════════╗
+    // ║               functions                ║
+    // ╚════════════════════════════════════════╝
+
+    /**
+      * @brief Serializes this specific object, used in recursive serialization.
+      * @return Object as JSON
+      */
+    [[nodiscard]] nlohmann::json serialize();
+
+    /**
+      * @brief Deserializes this specific object, used in recursive deserialization.
+      */
+    void deserialize(const nlohmann::json& j);
 };
 
 
