@@ -26,7 +26,7 @@ class SequentialMenu final : public Menu {
      * @param prompt Prompt to be shown to user
      */
     void collect(const std::string& prompt) {
-      std::cout << "\n"<< prompt << "\n> ";
+      std::cout << "\n"<< prompt << ": \n> ";
 
       std::string var;
       std::getline(std::cin, var);

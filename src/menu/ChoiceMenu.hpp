@@ -63,7 +63,7 @@ class ChoiceMenu final : public Menu {
     [[noreturn]] void display() override {
       int choice;
       while (true) {
-        std::cout << "\033[1;33m[" << menuName << "]\033[0m" << suffixText << "\nChoose an option:\n";
+        std::cout << "\033[1;33m[" << menuName << "]\033[0m" << suffixText << "\n\nChoose an option:\n";
         for (const auto& [i, entry] : options) {
           std::cout << "\t\033[1;33m" << i << ".\033[0m " << entry.description << "\n";
         }

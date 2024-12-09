@@ -73,7 +73,7 @@ void Program::setupSession() {
     std::string uid;
     std::cout << "\nPlease enter your UID:\033[0m\n> ";
     std::getline(std::cin, uid);
-    std::cout << "\033[0m\n" << std::endl;
+    std::cout << "\033[0m" << std::endl;
 
     // Check "password"
     if (!users.contains(uid)) {
@@ -89,7 +89,7 @@ void Program::setupSession() {
 
 
     // Be nice to the user
-    std::cout << "Welcome " << users[cuid]->getUserName() << "\n" << std::endl;
+    std::cout << "Welcome " << users[cuid]->getUserName() << "\n\n" << std::endl;
     break;
   }
 }
@@ -102,37 +102,76 @@ void Program::removeProduct(const std::shared_ptr<Product>& productToRemove) {
 }
 
 
+void Program::removeCustomer(const std::shared_ptr<Customer>& customerToRemove) {
+  std::erase_if(customers,
+                [&customerToRemove](const std::shared_ptr<Customer>& customer) {
+                  return customer == customerToRemove;
+                });
+}
+
+
 void Program::initMenu() {
   const auto stockMenu = std::make_shared<ChoiceMenu>("Stock menu");
-
-  // const auto fullStockMenu = ;
-  // const auto filteredStockMenu = ;
-
-  stockMenu->addOption("Show full stock", createFullStockMenu());
-  stockMenu->addOption("Show filtered stock", createStockFilterByQueryMenu(stockMenu));
+  stockMenu->addOption("Show all stock", createFullStockMenu());
+  stockMenu->addOption("Filter stock", createStockFilterByQueryMenu(stockMenu));
   if (permissionLevel == ADMIN) {
     stockMenu->addOption("Add new product", createAddStockMenu());
   }
 
+
+  const auto customerMenu = std::make_shared<ChoiceMenu>("Customers menu");
+  customerMenu->addOption("Show all customers", createFullCustomerMenu());
+  customerMenu->addOption("Filter customers", createCustomerFilterByQueryMenu(customerMenu));
+  customerMenu->addOption("Add new customer", createAddCustomerMenu());
+
+
   const auto mainMenu = std::make_shared<ChoiceMenu>("Main menu");
   mainMenu->addOption("Stock", stockMenu);
+  mainMenu->addOption("Customers", customerMenu);
   mainMenu->addOption("Save changes", [this] { serialize("../mem.json"); });
 
   mainMenu->display();
 }
 
 
+std::shared_ptr<SequentialMenu> Program::createAddCustomerMenu() {
+  const auto _menu = std::make_shared<SequentialMenu>("Add new customer");
+  _menu->addCollection("Enter the first name");
+  _menu->addCollection("Enter the last name");
+  _menu->addCollection("Enter the address");
+
+  // Set the handler to create and add the tire using collected inputs
+  _menu->setHandler([this](const std::vector<std::string>& inputs) {
+    try {
+      // Create and add the customer
+      this->customers.emplace_back(std::make_shared<Customer>(
+        inputs[0],
+        inputs[1],
+        inputs[2]
+      ));
+
+      std::cout << "\033[1;32mCustomer added successfully!\033[0m\n\n";
+      initMenu();
+    } catch (const std::exception& e) {
+      std::cout << "\033[1;31mError: " << e.what() << "\033[0m\n\n";
+    }
+  });
+
+  return _menu;
+}
+
+
 std::shared_ptr<ChoiceMenu> Program::createAddStockMenu() {
   const auto tireMenu = std::make_shared<SequentialMenu>("Add new tire");
-  tireMenu->addCollection("Enter the tire name:");
-  tireMenu->addCollection("Enter the manufacturer:");
-  tireMenu->addCollection("Enter the diameter (in inches):");
-  tireMenu->addCollection("Enter the stock count:");
-  tireMenu->addCollection("Enter the individual price (in cents):");
-  tireMenu->addCollection("Enter the business price (in cents):");
-  tireMenu->addCollection("Enter the width (in mm):");
-  tireMenu->addCollection("Enter the height (in mm):");
-  tireMenu->addCollection("Enter the speed index (a single character):");
+  tireMenu->addCollection("Enter the tire name");
+  tireMenu->addCollection("Enter the manufacturer");
+  tireMenu->addCollection("Enter the diameter (in inches)");
+  tireMenu->addCollection("Enter the stock count");
+  tireMenu->addCollection("Enter the individual price (in cents)");
+  tireMenu->addCollection("Enter the business price (in cents)");
+  tireMenu->addCollection("Enter the width (in mm)");
+  tireMenu->addCollection("Enter the height (in mm)");
+  tireMenu->addCollection("Enter the speed index (a single character)");
 
   // Set the handler to create and add the tire using collected inputs
   tireMenu->setHandler([this](const std::vector<std::string>& inputs) {
@@ -178,15 +217,15 @@ std::shared_ptr<ChoiceMenu> Program::createAddStockMenu() {
 
   // Implement Rim Menu
   const auto rimMenu = std::make_shared<SequentialMenu>("Add new rim");
-  rimMenu->addCollection("Enter the rim name:");
-  rimMenu->addCollection("Enter the manufacturer:");
-  rimMenu->addCollection("Enter the diameter (in inches):");
-  rimMenu->addCollection("Enter the stock count:");
-  rimMenu->addCollection("Enter the individual price (in cents):");
-  rimMenu->addCollection("Enter the business price (in cents):");
-  rimMenu->addCollection("Enter the width (in mm):");
-  rimMenu->addCollection("Enter the color:");
-  rimMenu->addCollection("Enter the material (steel or aluminium):");
+  rimMenu->addCollection("Enter the rim name");
+  rimMenu->addCollection("Enter the manufacturer");
+  rimMenu->addCollection("Enter the diameter (in inches)");
+  rimMenu->addCollection("Enter the stock count");
+  rimMenu->addCollection("Enter the individual price (in cents)");
+  rimMenu->addCollection("Enter the business price (in cents)");
+  rimMenu->addCollection("Enter the width (in mm)");
+  rimMenu->addCollection("Enter the color");
+  rimMenu->addCollection("Enter the material (steel or aluminium)");
 
   rimMenu->setHandler([this](const std::vector<std::string>& inputs) {
     try {
@@ -234,28 +273,126 @@ std::shared_ptr<ChoiceMenu> Program::createAddStockMenu() {
   return _menu;
 }
 
+std::shared_ptr<ChoiceMenu> Program::createFullCustomerMenu() {
+  auto _menu = std::make_shared<ChoiceMenu>("Customer menu");
+  for (const auto& customer : customers) {
+    const std::string& customerFullName = customer->getFirstName() + " " + customer->getLastName();
+    _menu->addOption(customerFullName, createCustomerOptionHandler(customer, _menu));
+  }
+  return _menu;
+}
 
-std::shared_ptr<ChoiceMenu> Program::createFullStockMenu(const std::string& filter_str) {
-  bool filterEnabled = false;
-  if (!filter_str.empty()) { filterEnabled = true; }
+
+std::shared_ptr<ChoiceMenu> Program::createFullStockMenu() {
   auto _menu = std::make_shared<ChoiceMenu>("Stock menu");
   for (const auto& product : products) {
-    if (filterEnabled) {
-      // name and filter to lowercase
-      std::string lowercaseFilterStr = filter_str;
-      std::ranges::transform(lowercaseFilterStr, lowercaseFilterStr.begin(), ::tolower);
-
-      std::string lowercaseProductName = product->getName();
-      std::ranges::transform(lowercaseProductName, lowercaseProductName.begin(), ::tolower);
-      if (!lowercaseProductName.contains(lowercaseFilterStr)) {
-        // Filtered out -> skip
-        continue;
-      }
-    }
-
     _menu->addOption(product->getName(), createProductOptionHandler(product, _menu));
   }
   return _menu;
+}
+
+
+std::shared_ptr<SequentialMenu> Program::createCustomerFilterByQueryMenu(const std::shared_ptr<Menu>& parent) {
+  // Ensure _menu is successfully created.
+  auto _menu = std::make_shared<SequentialMenu>("Filter objects");
+  if (!_menu) {
+    std::cerr << "Failed to create the filter menu!" << std::endl;
+    return nullptr; // Exit early on failure.
+  }
+
+  _menu->setSuffixText(
+    "Search format: X/<query>"
+    "\n\tE.g. n/john doe\n"
+    "\nwhere X:"
+    "\n\t- n: name"
+    "\n\t- a: address"
+  );
+  _menu->addCollection("Search query");
+
+  // Handler for user input
+  _menu->setHandler([this, &parent, &_menu](const std::vector<std::string>& inputs) {
+    if (inputs.empty()) {
+      std::cerr << "Invalid input: No query provided." << std::endl;
+      _menu->display();
+      return;
+    }
+
+    const std::string& input = inputs[0];
+    const auto delimiterPos = input.find('/');
+    if (delimiterPos == std::string::npos || delimiterPos == 0 || delimiterPos == input.size() - 1) {
+      std::cerr << "Invalid input format: Expected X/<query>." << std::endl;
+      _menu->display();
+      return;
+    }
+
+    const char filterType = input[0];
+    std::string query = input.substr(delimiterPos + 1);
+
+    // Convert query to lowercase
+    std::ranges::transform(query.begin(), query.end(), query.begin(), ::tolower);
+
+    // Initialize ChoiceMenu safely.
+    const auto filteredFullCustomerMenu = std::make_shared<ChoiceMenu>("Filtered Stock Menu");
+    if (!filteredFullCustomerMenu) {
+      std::cerr << "Failed to create filtered stock menu!" << std::endl;
+      return;
+    }
+
+    for (const auto& customer : customers) {
+      std::string targetField;
+      const std::string customerFullName = customer->getFirstName() + " " + customer->getLastName();
+      switch (filterType) {
+        case 'n': // Name
+          targetField = customerFullName;
+          break;
+        case 'a': // Address
+          targetField = customer->getAddress();
+          break;
+        default:
+          std::cerr << "Invalid filter type: " << filterType << ". Please try again." << std::endl;
+          _menu->display();
+          return;
+      }
+
+      // Convert target field to lowercase
+      std::ranges::transform(targetField.begin(), targetField.end(), targetField.begin(), ::tolower);
+
+      if (targetField.contains(query)) {
+        filteredFullCustomerMenu->addOption(customerFullName,
+                                            createCustomerOptionHandler(customer, filteredFullCustomerMenu));
+      }
+    }
+
+    // Safely set up parent-child relationships between menus.
+    _menu->setParentMenu(filteredFullCustomerMenu);
+    filteredFullCustomerMenu->setParentMenu(parent);
+
+    // Display the menu after setup
+    filteredFullCustomerMenu->display();
+  });
+
+  return _menu;
+}
+
+std::function<void()> Program::createCustomerOptionHandler(const std::shared_ptr<Customer>& customer,
+                                                           const std::shared_ptr<Menu>& parent) {
+  return [this, customer, parent]() {
+    const std::string customerInfo = "Name: " + customer->getFirstName() +
+        "\nSurname: " + customer->getLastName() +
+        "\nAddress: " + customer->getAddress();
+
+    const auto inspectMenu = std::make_shared<ChoiceMenu>("Inspect Customer", nullptr);
+    if (permissionLevel == ADMIN) {
+      inspectMenu->addOption("Remove Customer",
+                             [&customer, this]() {
+                               removeCustomer(customer);
+                               initMenu();
+                             });
+    }
+    inspectMenu->setSuffixText(customerInfo);
+    inspectMenu->setParentMenu(parent);
+    inspectMenu->display();
+  };
 }
 
 
@@ -273,7 +410,7 @@ std::shared_ptr<SequentialMenu> Program::createStockFilterByQueryMenu(const std:
     "\nwhere X:"
     "\n\t- n: name"
     "\n\t- d: diameter"
-    "\n\t- t: type (tire, rim)\n"
+    "\n\t- t: type (tire, rim)"
   );
   _menu->addCollection("Search query");
 
@@ -416,6 +553,22 @@ void Program::init() {
   // FIXME: dev stuff, remove when serialization works
   users["GYLS"] = std::make_shared<User>("Gilles", ADMIN);
   users["ALSTY"] = std::make_shared<User>("Alec", EMPLOYEE);
+
+  customers.emplace_back(std::make_shared<Customer>("Thomas", "Shelby", "22 Watery Lane, Birmingham"));
+  customers.emplace_back(std::make_shared<Customer>("James", "Moriarty", "Oxford University, London"));
+  customers.emplace_back(std::make_shared<Customer>("Gustavo", "Fring", "207 Arroyo Ave., Albuquerque, NM"));
+  customers.emplace_back(std::make_shared<Customer>("Hannah", "Blue", "505 Pine Ct"));
+  customers.emplace_back(std::make_shared<Customer>("Thomas", "Anderson", "101 Daffodil Rd"));
+  customers.emplace_back(std::make_shared<Customer>("Winston", "Smith", "606 Victory Mansions"));
+  customers.emplace_back(std::make_shared<Customer>("Paul", "Atreides", "Calidan"));
+  customers.emplace_back(std::make_shared<Customer>("Aberama", "Gold", "707 Spruce St"));
+  customers.emplace_back(std::make_shared<Customer>("William", "Turner", "21 Leftburough, Port Royal"));
+  customers.emplace_back(std::make_shared<Customer>("Benjamin", "Sisko", "Quarters no. 382, DS9"));
+  customers.emplace_back(std::make_shared<Customer>("Alice", "Kingsleigh", "123 Wonderland Ave"));
+  customers.emplace_back(std::make_shared<Customer>("Ellen", "Ripley", "2525 Hemlock Pl"));
+  customers.emplace_back(std::make_shared<Customer>("Cara", "Mitchell", "2626 Aspen St"));
+  customers.emplace_back(std::make_shared<Customer>("Spike", "Spiegel", "the Bebop"));
+  customers.emplace_back(std::make_shared<Customer>("Jack", "O'Neill", "2727 Walnut Ave, Colorado"));
 
   setupSession();
   initMenu();
