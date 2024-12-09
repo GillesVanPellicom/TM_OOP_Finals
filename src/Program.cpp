@@ -37,6 +37,17 @@ void Program::serialize(const std::string& filePath) const {
   }
   // END Customers
 
+  // Invoices
+  if (!invoices.empty()) {
+    nlohmann::json a = nlohmann::json::array();
+    for (const auto& i : invoices) {
+      // Add to the customers array
+      a.push_back(i->serialize());
+    }
+    j["invoices"] = a;
+  }
+  // END Invoices
+
 
   // Write the JSON to a file
   std::ofstream outputFile(filePath);
@@ -47,7 +58,7 @@ void Program::serialize(const std::string& filePath) const {
 
   outputFile << j.dump(4);
   outputFile.close();
-  std::cout << "Save complete.\n" << std::endl;
+  std::cout << "\033[1;32mSave complete.\033[0m\n" << std::endl;
 }
 
 
@@ -82,6 +93,14 @@ void Program::deserialize(const std::string& filePath) {
     }
   }
   // END Customers
+
+  // Invoices
+  if (j.contains("invoices") && j["invoices"].is_array()) {
+    for (const auto& json : j["invoices"]) {
+      invoices.emplace_back(std::make_shared<Invoice>(json));
+    }
+  }
+  // END Invoices
 
 
   std::cout << "Loading from memory completed.\n" << std::endl;
@@ -161,24 +180,75 @@ std::shared_ptr<ChoiceMenu> Program::createAddInvoiceMenu(const std::shared_ptr<
 
   auto _menu = std::make_shared<ChoiceMenu>("Add new invoice item", nullptr, false);
   _menu->addOption("Done",
-                   [this, invoice] {
+                   [&invoice, this]() {
+                     for (const auto& purchase : invoice->getPurchaseList()) {
+                       const auto& uuid = std::get<0>(purchase);
+                       const uint32_t quantity = std::get<1>(purchase);
+                       std::string name = std::get<3>(purchase);
+
+                       if (const auto product = getProductByUUID(uuid)) {
+                         // Process the product
+                         if (!product->decrementStockCount(quantity)) {
+                           std::cerr << "Failed to decrement stock for \"" << product->getName() << "\"" << std::endl;
+                         } else {
+                           std::cout << "Processed \"" << product->getName() << "\" successfully." << std::endl;
+                         }
+                       } else {
+                         std::cerr << "Product with UUID \"" << uuid << "\" not found in inventory!" << std::endl;
+                       }
+                     }
+                     std::cout << "\033[1;32mInvoice finalized. Stock successfully updated.\033[0m\n" << std::endl;
                      invoices.emplace_back(invoice);
                      initMenu();
                    });
 
   for (const auto& product : products) {
     _menu->addOption(product->getName(),
-                     [&product, &_menu, &invoice] {
+                     [&product, &_menu, &invoice, this] {
                        // Create a menu for entering quantity
                        const auto qtyMenu = std::make_shared<SequentialMenu>("Add new invoice item");
                        qtyMenu->addCollection("Enter qty");
 
-                       // Set the handler for qtyMenu to store the quantity and return to the product menu
-                       qtyMenu->setHandler([&product, &_menu, &invoice](const std::vector<std::string>& inputs) {
+                       if (product->getType() == TIRE) {
+                         qtyMenu->setSuffixText("1, 2 or 4 pcs.");
+                       } else if (product->getType() == RIM) {
+                         qtyMenu->setSuffixText("2 or 4 pcs.");
+                       }
+
+                       // Set the handler for qtyMenu to process the quantity
+                       qtyMenu->setHandler([&product, &_menu, &invoice, this](const std::vector<std::string>& inputs) {
                          const uint32_t output_qty = std::stoul(inputs[0]);
 
+                         // Validate quantity based on product type
+                         bool valid_qty = false;
+                         if (product->getType() == TIRE) {
+                           valid_qty = (output_qty == 1 || output_qty == 2 || output_qty == 4);
+                         } else if (product->getType() == RIM) {
+                           valid_qty = (output_qty == 2 || output_qty == 4);
+                         }
+
+                         if (!valid_qty) {
+                           std::cerr <<
+                               "Invalid quantity! For TIRE, valid quantities are 1, 2, or 4 pcs. For RIM, valid quantities are 2 or 4 pcs."
+                               << std::endl;
+                           Menu::waitForAnyKey(false);
+                           initMenu();
+                           return;
+                         }
+
+                         // Check if stock decrement is possible
+                         if (!product->isDecrementPossible(output_qty)) {
+                           std::cerr << "Not enough stock available" << std::endl;
+                           Menu::waitForAnyKey(false);
+                           initMenu();
+                           return;
+                         }
+
+                         // Temporarily add the product and quantity to the invoice without altering stock
                          invoice->addPurchase(product, output_qty);
 
+                         std::cout << "Product added to the invoice temporarily. Confirm or make further changes." <<
+                             std::endl;
                          _menu->display();
                        });
 
@@ -187,8 +257,23 @@ std::shared_ptr<ChoiceMenu> Program::createAddInvoiceMenu(const std::shared_ptr<
   }
 
 
+  // Display the menu
   _menu->display();
   return _menu;
+}
+
+
+std::shared_ptr<Product> Program::getProductByUUID(const UUIDGen::UUID& uuid) {
+  const auto it = std::ranges::find_if(products,
+                                       [&uuid](const std::shared_ptr<Product>& product) {
+                                         return product->getUUID() == uuid;
+                                       });
+
+  if (it != products.end()) {
+    return *it; // Return the product if found
+  }
+
+  return nullptr; // Return null if no product matches the UUID
 }
 
 
@@ -362,9 +447,16 @@ std::shared_ptr<ChoiceMenu> Program::createFullStockMenu() {
   return _menu;
 }
 
-std::shared_ptr<ChoiceMenu> Program::createFullInvoiceMenu() {
+std::shared_ptr<ChoiceMenu> Program::createFullInvoiceMenu(const std::shared_ptr<Customer>& c) {
   auto _menu = std::make_shared<ChoiceMenu>("Invoice menu");
   for (const auto& invoice : invoices) {
+    if (c != nullptr) {
+      // Filter enabled
+      if (c->getUUID() != invoice->getUUID()) {
+        continue;
+      }
+    }
+
     _menu->addOption(invoice->getInvoiceName(), createInvoiceOptionHandler(invoice, _menu));
   }
   return _menu;
@@ -462,12 +554,24 @@ std::function<void()> Program::createCustomerOptionHandler(const std::shared_ptr
     } else {
       business = "Individual";
     }
-    const std::string customerInfo = "Name: " + customer->getFirstName() +
-        "\nSurname: " + customer->getLastName() +
-        "\nAddress: " + customer->getAddress() +
-        "\nType: " + business;
+    const std::string customerInfo =
+        "Name    : " + customer->getFirstName() +
+        "\nSurname : " + customer->getLastName() +
+        "\nAddress : " + customer->getAddress() +
+        "\nType    : " + business;
 
     const auto inspectMenu = std::make_shared<ChoiceMenu>("Inspect Customer", nullptr);
+
+    inspectMenu->addOption("Show invoices",
+                           [&customer, this, &inspectMenu] {
+                             const auto im = createFullInvoiceMenu(customer);
+                             im->setParentMenu(inspectMenu);
+                             im->display();
+                           });
+    inspectMenu->addOption("Create invoice",
+                           [&customer, this] {
+                             createAddInvoiceMenu(customer);
+                           });
     if (permissionLevel == ADMIN) {
       inspectMenu->addOption("Remove Customer",
                              [&customer, this]() {
@@ -475,10 +579,6 @@ std::function<void()> Program::createCustomerOptionHandler(const std::shared_ptr
                                initMenu();
                              });
     }
-    inspectMenu->addOption("Create invoice",
-                           [&customer, this] {
-                             createAddInvoiceMenu(customer);
-                           });
     inspectMenu->setSuffixText(customerInfo);
     inspectMenu->setParentMenu(parent);
     inspectMenu->display();
@@ -619,9 +719,6 @@ std::shared_ptr<SequentialMenu> Program::createChangeStockMenu(const std::shared
   });
   return _menu;
 }
-
-
-
 
 
 /**

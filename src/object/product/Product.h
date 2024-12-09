@@ -109,7 +109,7 @@ class Product {
      * @return true if success, else false
      */
     bool decrementStockCount(const std::uint32_t stock_count_decrement) {
-      if (stockCount - stock_count_decrement < 0) return false;
+      if (stock_count_decrement > stockCount) return false;
       stockCount -= stock_count_decrement;
       return true;
     }
@@ -162,6 +162,8 @@ class Product {
       this->uuid = uuid;
     }
 
+
+
     virtual ~Product() = default;
 
     // ╔════════════════════════════════════════╗
@@ -180,6 +182,11 @@ class Product {
     virtual void deserialize(const nlohmann::json& j) = 0;
 
     virtual std::string buildProductInfo() = 0;
+
+  [[nodiscard]] bool isDecrementPossible(const std::uint32_t stock_count_decrement) const {
+    return stock_count_decrement <= stockCount;
+  }
+
 };
 
 #endif //PRODUCT_H

@@ -106,6 +106,150 @@
             "lastName": "O'Neill"
         }
     ],
+    "invoices": [
+        {
+            "address": "22 Watery Lane, Birmingham",
+            "business": false,
+            "customerId": "ef735f99-5877-4755-95a4-cc634c328668",
+            "discountRate": 10,
+            "finalPrice": 221085,
+            "firstName": "Thomas",
+            "invoiceName": "Thomas Shelby 2024-12-09 23:06:35",
+            "lastName": "Shelby",
+            "noDiscountPrice": 245650,
+            "purchaseList": [
+                {
+                    "name": "WinterGrip X200",
+                    "price": 12075,
+                    "productID": "c491d4e3-985d-4b9b-873f-6f0b11c42c7e",
+                    "productType": 0,
+                    "qty": 2
+                },
+                {
+                    "name": "EcoDrive E300",
+                    "price": 8000,
+                    "productID": "27f577c1-f6a3-4b80-a7e0-718a2c08dd58",
+                    "productType": 0,
+                    "qty": 4
+                },
+                {
+                    "name": "AllSeason Pro",
+                    "price": 9500,
+                    "productID": "9325e97e-7a11-40d3-aa37-2f7e8a6b7364",
+                    "productType": 0,
+                    "qty": 1
+                },
+                {
+                    "name": "OffRoad Master OR900",
+                    "price": 35000,
+                    "productID": "ba468dc5-2e7a-42b3-9d75-13a60999d775",
+                    "productType": 1,
+                    "qty": 4
+                },
+                {
+                    "name": "ChromeClassic R300",
+                    "price": 20000,
+                    "productID": "1042b707-142a-41d0-b723-d47961cf0590",
+                    "productType": 1,
+                    "qty": 2
+                }
+            ]
+        },
+        {
+            "address": "the Bebop",
+            "business": true,
+            "customerId": "e105fa15-08f5-4587-921d-b2c2e18b71c0",
+            "discountRate": 0,
+            "finalPrice": 23100,
+            "firstName": "Spike",
+            "invoiceName": "Spike Spiegel 2024-12-09 23:08:00",
+            "lastName": "Spiegel",
+            "noDiscountPrice": 23100,
+            "purchaseList": [
+                {
+                    "name": "WinterGrip X200",
+                    "price": 11550,
+                    "productID": "c491d4e3-985d-4b9b-873f-6f0b11c42c7e",
+                    "productType": 0,
+                    "qty": 2
+                }
+            ]
+        },
+        {
+            "address": "the Bebop",
+            "business": true,
+            "customerId": "e105fa15-08f5-4587-921d-b2c2e18b71c0",
+            "discountRate": 0,
+            "finalPrice": 78200,
+            "firstName": "Spike",
+            "invoiceName": "Spike Spiegel 2024-12-09 23:08:18",
+            "lastName": "Spiegel",
+            "noDiscountPrice": 78200,
+            "purchaseList": [
+                {
+                    "name": "EcoDrive E300",
+                    "price": 7550,
+                    "productID": "27f577c1-f6a3-4b80-a7e0-718a2c08dd58",
+                    "productType": 0,
+                    "qty": 4
+                },
+                {
+                    "name": "AlloyStyle A500",
+                    "price": 24000,
+                    "productID": "7557de7c-c169-4f0c-b71a-d9fd71bd5252",
+                    "productType": 1,
+                    "qty": 2
+                }
+            ]
+        },
+        {
+            "address": "707 Spruce St",
+            "business": false,
+            "customerId": "7f37d87e-dfab-4419-ba34-a17329b75c5d",
+            "discountRate": 0,
+            "finalPrice": 12075,
+            "firstName": "Aberama",
+            "invoiceName": "Aberama Gold 2024-12-09 23:08:38",
+            "lastName": "Gold",
+            "noDiscountPrice": 12075,
+            "purchaseList": [
+                {
+                    "name": "WinterGrip X200",
+                    "price": 12075,
+                    "productID": "c491d4e3-985d-4b9b-873f-6f0b11c42c7e",
+                    "productType": 0,
+                    "qty": 1
+                }
+            ]
+        },
+        {
+            "address": "123 Wonderland Ave",
+            "business": true,
+            "customerId": "f7d1dae9-4722-4c9c-ba4d-8ad5e234e64b",
+            "discountRate": 0,
+            "finalPrice": 250000,
+            "firstName": "Alice",
+            "invoiceName": "Alice Kingsleigh 2024-12-09 23:08:49",
+            "lastName": "Kingsleigh",
+            "noDiscountPrice": 250000,
+            "purchaseList": [
+                {
+                    "name": "CarbonXtreme C800",
+                    "price": 53000,
+                    "productID": "63732fad-ced7-4ffd-bcc1-e2b7fdec1353",
+                    "productType": 1,
+                    "qty": 4
+                },
+                {
+                    "name": "ChromeClassic R300",
+                    "price": 19000,
+                    "productID": "1042b707-142a-41d0-b723-d47961cf0590",
+                    "productType": 1,
+                    "qty": 2
+                }
+            ]
+        }
+    ],
     "products": [
         {
             "UUID": "c491d4e3-985d-4b9b-873f-6f0b11c42c7e",
@@ -116,7 +260,7 @@
             "priceBusiness": 11550,
             "priceIndividual": 12075,
             "speedIndex": 72,
-            "stockCount": 50,
+            "stockCount": 45,
             "type": "tire",
             "width": 225
         },
@@ -129,7 +273,7 @@
             "priceBusiness": 8800,
             "priceIndividual": 9500,
             "speedIndex": 84,
-            "stockCount": 100,
+            "stockCount": 99,
             "type": "tire",
             "width": 205
         },
@@ -155,7 +299,7 @@
             "priceBusiness": 7550,
             "priceIndividual": 8000,
             "speedIndex": 83,
-            "stockCount": 75,
+            "stockCount": 67,
             "type": "tire",
             "width": 185
         },
@@ -181,7 +325,7 @@
             "name": "AlloyStyle A500",
             "priceBusiness": 24000,
             "priceIndividual": 25000,
-            "stockCount": 40,
+            "stockCount": 38,
             "type": "rim",
             "width": 8.0
         },
@@ -207,7 +351,7 @@
             "name": "CarbonXtreme C800",
             "priceBusiness": 53000,
             "priceIndividual": 55000,
-            "stockCount": 10,
+            "stockCount": 6,
             "type": "rim",
             "width": 9.0
         },
@@ -220,7 +364,7 @@
             "name": "ChromeClassic R300",
             "priceBusiness": 19000,
             "priceIndividual": 20000,
-            "stockCount": 25,
+            "stockCount": 21,
             "type": "rim",
             "width": 7.0
         },
@@ -233,7 +377,7 @@
             "name": "OffRoad Master OR900",
             "priceBusiness": 34000,
             "priceIndividual": 35000,
-            "stockCount": 15,
+            "stockCount": 11,
             "type": "rim",
             "width": 10.0
         }

@@ -76,11 +76,14 @@ class Program {
     std::shared_ptr<SequentialMenu> createAddCustomerMenu();
     std::shared_ptr<ChoiceMenu> createAddStockMenu();
     std::shared_ptr<ChoiceMenu> createFullCustomerMenu();
-    std::shared_ptr<ChoiceMenu> createFullInvoiceMenu();
+    std::shared_ptr<ChoiceMenu> createFullInvoiceMenu(const std::shared_ptr<Customer>& c = nullptr);
     std::shared_ptr<ChoiceMenu> createFullStockMenu();
     std::shared_ptr<SequentialMenu> createCustomerFilterByQueryMenu(const std::shared_ptr<Menu>& parent);
     std::shared_ptr<SequentialMenu> createStockFilterByQueryMenu(const std::shared_ptr<Menu>& parent);
     std::shared_ptr<SequentialMenu> createChangeStockMenu(const std::shared_ptr<Product>& product);
+
+  std::shared_ptr<Product> getProductByUUID(const UUIDGen::UUID& uuid);
+
 
   public
   :

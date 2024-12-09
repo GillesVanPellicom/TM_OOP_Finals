@@ -29,6 +29,8 @@ class Invoice {
   // sub purchases for this invoice. Use UUID since pointers can't be serialized/deserialized
   // productID, qty, productType, name, price
   std::vector<std::tuple<UUIDGen::UUID, uint32_t, ProductType, std::string, std::uint64_t> > purchaseList;
+
+  // Prices can be recalculated each deserialization
   std::uint64_t noDiscountPrice = 0;
   std::uint64_t finalPrice = 0;
   std::uint64_t discountRate = 0;
@@ -36,13 +38,21 @@ class Invoice {
   void calculatePrice();
 
   public:
+    [[nodiscard]] nlohmann::json serialize() const;
+
+    void deserialize(const nlohmann::json& j);
+
     explicit Invoice(const std::shared_ptr<Customer>& c)
-      : invoiceName(c->getFirstName() + " " + getCurrentDateTime()),
+      : invoiceName(c->getFirstName() + " " + c->getLastName() + " " + getCurrentDateTime()),
         customerId(c->getUUID()),
         firstName(c->getFirstName()),
         lastName(c->getLastName()),
         address(c->getAddress()),
         business(c->isBusinessCustomer()) {
+    }
+
+    explicit Invoice(const nlohmann::json& j) {
+      deserialize(j);
     }
 
     void addPurchase(const std::shared_ptr<Product>& p, uint32_t count);
@@ -119,6 +129,12 @@ class Invoice {
     }
     void setInvoiceName(const std::string& invoice_name) {
       invoiceName = invoice_name;
+    }
+
+
+    [[nodiscard]] std::vector<std::tuple<UUIDGen::UUID, uint32_t, ProductType, std::string, std::uint64_t> >
+    getPurchaseList() const {
+      return purchaseList;
     }
 };
 

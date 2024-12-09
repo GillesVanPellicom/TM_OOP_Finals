@@ -108,3 +108,57 @@ std::string Invoice::buildInvoiceInfo() const {
 
   return info.str();
 }
+
+
+nlohmann::json Invoice::serialize() const {
+  nlohmann::json j = {
+    {"invoiceName", invoiceName},
+    {"customerId", customerId},
+    {"firstName", firstName},
+    {"lastName", lastName},
+    {"address", address},
+    {"business", business},
+    {"purchaseList", nlohmann::json::array()},
+    {"noDiscountPrice", noDiscountPrice},
+    {"finalPrice", finalPrice},
+    {"discountRate", discountRate}
+  };
+
+  // Serialize the purchase list
+  for (const auto& purchase : purchaseList) {
+    j["purchaseList"].push_back({
+        {"productID", std::get<0>(purchase)},
+        {"qty", std::get<1>(purchase)},
+        {"productType", static_cast<int>(std::get<2>(purchase))},
+        {"name", std::get<3>(purchase)},
+        {"price", std::get<4>(purchase)}
+    });
+  }
+
+  return j;
+}
+
+
+void Invoice::deserialize(const nlohmann::json& j) {
+  invoiceName = j.at("invoiceName").get<std::string>();
+  customerId = j.at("customerId").get<std::string>();
+  firstName = j.at("firstName").get<std::string>();
+  lastName = j.at("lastName").get<std::string>();
+  address = j.at("address").get<std::string>();
+  business = j.at("business").get<bool>();
+  noDiscountPrice = j.at("noDiscountPrice").get<std::uint64_t>();
+  finalPrice = j.at("finalPrice").get<std::uint64_t>();
+  discountRate = j.at("discountRate").get<std::uint64_t>();
+
+  // Deserialize the purchase list
+  purchaseList.clear();
+  for (const auto& purchase : j.at("purchaseList")) {
+    purchaseList.emplace_back(
+        purchase.at("productID").get<std::string>(),
+        purchase.at("qty").get<uint32_t>(),
+        static_cast<ProductType>(purchase.at("productType").get<int>()),
+        purchase.at("name").get<std::string>(),
+        purchase.at("price").get<std::uint64_t>()
+    );
+  }
+}
