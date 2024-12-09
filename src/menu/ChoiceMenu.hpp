@@ -16,10 +16,14 @@ class ChoiceMenu final : public Menu {
     // ║             Constructors               ║
     // ╚════════════════════════════════════════╝
 
-    explicit ChoiceMenu(const std::string& menu_name, const std::shared_ptr<Menu>& parent_menu = nullptr)
+    explicit ChoiceMenu(const std::string& menu_name,
+                        const std::shared_ptr<Menu>& parent_menu = nullptr,
+                        const bool exitOption = true)
       : Menu(menu_name, parent_menu) {
       // Initialize exit option
-      addOption("Exit", [this]() { shouldExit = true; });
+      if (exitOption) {
+        addOption("Exit", [this]() { shouldExit = true; });
+      }
     }
 
 

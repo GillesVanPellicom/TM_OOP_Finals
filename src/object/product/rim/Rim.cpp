@@ -3,9 +3,7 @@
 // ║ Description  : Lorem ipsum dolor sit amet                                        ║
 // ║                Lorem ipsum dolor sit amet                                        ║
 // ║ Author(s)    : "Gilles Van pellicom" <r0997008@student.thomasmore.be>            ║
-// ║ Date         : 2024/12/07                                                        ║                
-// ║ Version      : 1.0                                                               ║
-// ║ License      : GPL-3.0                                                           ║
+// ║ Date         : 2024/12/07                                                        ║
 // ╚══════════════════════════════════════════════════════════════════════════════════╝
 
 #include "Rim.h"
@@ -27,6 +25,7 @@ nlohmann::json Rim::serialize() {
   return j;
 }
 
+
 void Rim::deserialize(const nlohmann::json& j) {
   this->setTypeAsString(j.at("type").get<std::string>());
   this->setName(j.at("name").get<std::string>());
@@ -39,4 +38,21 @@ void Rim::deserialize(const nlohmann::json& j) {
   this->setColor(j.at("color").get<std::string>());
   this->setMaterialAsString(j.at("material").get<std::string>());
   this->setUUID(j.at("UUID").get<std::string>());
+}
+
+
+std::string Rim::buildProductInfo() {
+  std::ostringstream info;
+  info << "Name               : " << getName()
+      << "\nManufacturer       : " << getManufacturer()
+      << "\nType               : " << getTypeAsString()
+      << "\nDiameter           : " << std::to_string(getDiameter()) << " (inch)"
+      << "\nWidth              : " << std::to_string(getWidth()) << " (mm)"
+      << "\nColor              : " << getColor()
+      << "\nMaterial           : " << getMaterialAsString()
+      << "\nStock Count        : " << std::to_string(this->getStockCount())
+      << "\nPrice (Individual) : " << convertCentsToReadable(this->getPriceIndividual())
+      << "\nPrice (Business)   : " << convertCentsToReadable(this->getPriceBusiness());
+
+  return info.str();
 }

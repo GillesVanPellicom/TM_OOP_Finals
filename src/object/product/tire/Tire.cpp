@@ -3,9 +3,7 @@
 // ║ Description  : Lorem ipsum dolor sit amet                                        ║
 // ║                Lorem ipsum dolor sit amet                                        ║
 // ║ Author(s)    : "Gilles Van pellicom" <r0997008@student.thomasmore.be>            ║
-// ║ Date         : 2024/12/07                                                        ║                
-// ║ Version      : 1.0                                                               ║
-// ║ License      : GPL-3.0                                                           ║
+// ║ Date         : 2024/12/07                                                        ║
 // ╚══════════════════════════════════════════════════════════════════════════════════╝
 
 #include "Tire.h"
@@ -40,4 +38,21 @@ void Tire::deserialize(const nlohmann::json& j) {
   this->setHeight(j.at("height").get<std::uint32_t>());
   this->setSpeedIndex(j.at("speedIndex").get<char>());
   this->setUUID(j.at("UUID").get<std::string>());
+}
+
+
+std::string Tire::buildProductInfo() {
+  std::ostringstream info;
+  info << "Name               : " << getName()
+      << "\nManufacturer       : " << getManufacturer()
+      << "\nType               : " << getTypeAsString()
+      << "\nDiameter           : " << std::to_string(this->getDiameter()) << " (inch)"
+      << "\nWidth              : " << std::to_string(getWidth()) << " (mm)"
+      << "\nHeight             : " << std::to_string(getHeight()) << " (mm)"
+      << "\nSpeed Index        : " << std::string(1, getSpeedIndex())
+      << "\nStock Count        : " << std::to_string(this->getStockCount())
+      << "\nPrice (Individual) : " << convertCentsToReadable(this->getPriceIndividual())
+      << "\nPrice (Business)   : " << convertCentsToReadable(this->getPriceBusiness());
+
+  return info.str();
 }

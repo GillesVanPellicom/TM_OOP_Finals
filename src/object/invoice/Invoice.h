@@ -13,11 +13,14 @@
 
 #include "../customer/Customer.h"
 #include "../../util/IdGen.hpp"
+#include "../../util/DateGen.hpp"
 #include "../../object/product/Product.h"
 #include "../../object/product/tire/Tire.h"
 #include "../../object/product/rim/Rim.h"
 
 class Invoice {
+  std::string invoiceName;
+
   UUIDGen::UUID customerId; // Can be safely dangled, no UUID references used after object construction
   std::string firstName;
   std::string lastName;
@@ -28,20 +31,95 @@ class Invoice {
   std::vector<std::tuple<UUIDGen::UUID, uint32_t, ProductType, std::string, std::uint64_t> > purchaseList;
   std::uint64_t noDiscountPrice = 0;
   std::uint64_t finalPrice = 0;
-  std::uint64_t discountRate = 0.0;
+  std::uint64_t discountRate = 0;
+
+  void calculatePrice();
 
   public:
     explicit Invoice(const std::shared_ptr<Customer>& c)
-      : customerId(c->getUUID()),
+      : invoiceName(c->getFirstName() + " " + getCurrentDateTime()),
+        customerId(c->getUUID()),
         firstName(c->getFirstName()),
         lastName(c->getLastName()),
         address(c->getAddress()),
         business(c->isBusinessCustomer()) {
     }
 
-  void addPurchase(const std::shared_ptr<Product>& p, uint32_t count);
+    void addPurchase(const std::shared_ptr<Product>& p, uint32_t count);
 
-  void calculatePrice();
+    [[nodiscard]] std::string buildInvoiceInfo() const;
+
+
+    [[nodiscard]] UUIDGen::UUID getUUID() const {
+      return customerId;
+    }
+    void setUUID(const UUIDGen::UUID& UUID) {
+      customerId = UUID;
+    }
+
+
+    [[nodiscard]] std::string getFirstName() const {
+      return firstName;
+    }
+    void setFirstName(const std::string& first_name) {
+      firstName = first_name;
+    }
+
+
+    [[nodiscard]] std::string getLastName() const {
+      return lastName;
+    }
+    void setLastName(const std::string& last_name) {
+      lastName = last_name;
+    }
+
+
+    [[nodiscard]] std::string getAddress() const {
+      return address;
+    }
+    void setAddress(const std::string& address) {
+      this->address = address;
+    }
+
+
+    [[nodiscard]] bool isBusiness() const {
+      return business;
+    }
+    void setIsBusiness(const bool business) {
+      this->business = business;
+    }
+
+
+    [[nodiscard]] std::uint64_t getNoDiscountPrice() const {
+      return noDiscountPrice;
+    }
+    void setNoDiscountPrice(const std::uint64_t no_discount_price) {
+      noDiscountPrice = no_discount_price;
+    }
+
+
+    [[nodiscard]] std::uint64_t getFinalPrice() const {
+      return finalPrice;
+    }
+    void setFinalPrice(const std::uint64_t final_price) {
+      finalPrice = final_price;
+    }
+
+
+    [[nodiscard]] std::uint64_t getDiscountRate() const {
+      return discountRate;
+    }
+    void setDiscountRate(const std::uint64_t discount_rate) {
+      discountRate = discount_rate;
+    }
+
+
+    [[nodiscard]] std::string getInvoiceName() const {
+      return invoiceName;
+    }
+    void setInvoiceName(const std::string& invoice_name) {
+      invoiceName = invoice_name;
+    }
 };
 
 

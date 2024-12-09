@@ -114,6 +114,9 @@ class Rim final : public Product {
       * @brief Deserializes this specific object, used in recursive deserialization.
       */
     void deserialize(const nlohmann::json& j) override;
+
+
+    std::string buildProductInfo() override;
 };
 
 

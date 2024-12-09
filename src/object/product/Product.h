@@ -178,6 +178,8 @@ class Product {
    * @brief Deserializes this specific object, used in recursive deserialization.
    */
     virtual void deserialize(const nlohmann::json& j) = 0;
+
+    virtual std::string buildProductInfo() = 0;
 };
 
 #endif //PRODUCT_H

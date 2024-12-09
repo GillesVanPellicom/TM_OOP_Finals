@@ -8,6 +8,8 @@
 
 #include "Program.h"
 
+#include "object/invoice/Invoice.h"
+
 
 void Program::serialize(const std::string& filePath) const {
   nlohmann::json j; // JSON root
@@ -142,6 +144,7 @@ void Program::initMenu() {
   customerMenu->addOption("Show all customers", createFullCustomerMenu());
   customerMenu->addOption("Filter customers", createCustomerFilterByQueryMenu(customerMenu));
   customerMenu->addOption("Add new customer", createAddCustomerMenu());
+  customerMenu->addOption("Show all invoices", createFullInvoiceMenu());
 
 
   const auto mainMenu = std::make_shared<ChoiceMenu>("Main menu");
@@ -150,6 +153,42 @@ void Program::initMenu() {
   mainMenu->addOption("Save changes", [this] { serialize("../mem.json"); });
 
   mainMenu->display();
+}
+
+
+std::shared_ptr<ChoiceMenu> Program::createAddInvoiceMenu(const std::shared_ptr<Customer>& c) {
+  auto invoice = std::make_shared<Invoice>(c);
+
+  auto _menu = std::make_shared<ChoiceMenu>("Add new invoice item", nullptr, false);
+  _menu->addOption("Done",
+                   [this, invoice] {
+                     invoices.emplace_back(invoice);
+                     initMenu();
+                   });
+
+  for (const auto& product : products) {
+    _menu->addOption(product->getName(),
+                     [&product, &_menu, &invoice] {
+                       // Create a menu for entering quantity
+                       const auto qtyMenu = std::make_shared<SequentialMenu>("Add new invoice item");
+                       qtyMenu->addCollection("Enter qty");
+
+                       // Set the handler for qtyMenu to store the quantity and return to the product menu
+                       qtyMenu->setHandler([&product, &_menu, &invoice](const std::vector<std::string>& inputs) {
+                         const uint32_t output_qty = std::stoul(inputs[0]);
+
+                         invoice->addPurchase(product, output_qty);
+
+                         _menu->display();
+                       });
+
+                       qtyMenu->display(); // Display qtyMenu to allow quantity input
+                     });
+  }
+
+
+  _menu->display();
+  return _menu;
 }
 
 
@@ -323,6 +362,14 @@ std::shared_ptr<ChoiceMenu> Program::createFullStockMenu() {
   return _menu;
 }
 
+std::shared_ptr<ChoiceMenu> Program::createFullInvoiceMenu() {
+  auto _menu = std::make_shared<ChoiceMenu>("Invoice menu");
+  for (const auto& invoice : invoices) {
+    _menu->addOption(invoice->getInvoiceName(), createInvoiceOptionHandler(invoice, _menu));
+  }
+  return _menu;
+}
+
 
 std::shared_ptr<SequentialMenu> Program::createCustomerFilterByQueryMenu(const std::shared_ptr<Menu>& parent) {
   // Ensure _menu is successfully created.
@@ -428,6 +475,10 @@ std::function<void()> Program::createCustomerOptionHandler(const std::shared_ptr
                                initMenu();
                              });
     }
+    inspectMenu->addOption("Create invoice",
+                           [&customer, this] {
+                             createAddInvoiceMenu(customer);
+                           });
     inspectMenu->setSuffixText(customerInfo);
     inspectMenu->setParentMenu(parent);
     inspectMenu->display();
@@ -526,7 +577,7 @@ std::function<void()> Program::createProductOptionHandler(const std::shared_ptr<
   return [this, product, parent]() {
     const auto changeStockMenu = createChangeStockMenu(product);
 
-    const std::string productInfo = buildProductInfo(product);
+    const std::string productInfo = product->buildProductInfo();
 
     const auto inspectMenu = std::make_shared<ChoiceMenu>("Inspect Product", nullptr);
     inspectMenu->addOption("Add stock", changeStockMenu);
@@ -545,9 +596,23 @@ std::function<void()> Program::createProductOptionHandler(const std::shared_ptr<
 }
 
 
+std::function<void()> Program::createInvoiceOptionHandler(const std::shared_ptr<Invoice>& invoice,
+                                                          const std::shared_ptr<Menu>& parent) {
+  return [invoice, parent]() {
+    const std::string invoiceInfo = invoice->buildInvoiceInfo();
+
+    const auto inspectMenu = std::make_shared<ChoiceMenu>("Invoice Details", nullptr);
+
+    inspectMenu->setSuffixText(invoiceInfo);
+    inspectMenu->setParentMenu(parent);
+    inspectMenu->display();
+  };
+}
+
+
 std::shared_ptr<SequentialMenu> Program::createChangeStockMenu(const std::shared_ptr<Product>& product) {
   // NOLINT(*-convert-member-functions-to-static)
-  auto _menu = std::make_shared<SequentialMenu>("Stock menu");
+  auto _menu = std::make_shared<SequentialMenu>("Stock Menu");
   _menu->addCollection("Amount of stock to add");
   _menu->setHandler([product](const std::vector<std::string>& inputs) {
     product->setStockCount(product->getStockCount() + std::stoi(inputs[0]));
@@ -556,31 +621,7 @@ std::shared_ptr<SequentialMenu> Program::createChangeStockMenu(const std::shared
 }
 
 
-std::string Program::buildProductInfo(const std::shared_ptr<Product>& product) {
-  std::string info =
-      "Name: " + product->getName() +
-      "\nManufacturer: " + product->getManufacturer() +
-      "\nType: " + product->getTypeAsString() +
-      "\nDiameter: " + std::to_string(product->getDiameter()) + " (inch)";
 
-  if (product->instanceOf(TIRE)) {
-    const auto tire = std::dynamic_pointer_cast<Tire>(product);
-    info += "\nWidth: " + std::to_string(tire->getWidth()) + " (mm)"
-        + "\nHeight: " + std::to_string(tire->getHeight()) + " (mm)"
-        + "\nSpeed Index: " + std::string(1, tire->getSpeedIndex());
-  } else if (product->instanceOf(RIM)) {
-    const auto rim = std::dynamic_pointer_cast<Rim>(product);
-    info += "\nWidth: " + std::to_string(rim->getWidth()) + " (mm)"
-        + "\nColor: " + rim->getColor()
-        + "\nMaterial: " + rim->getMaterialAsString();
-  }
-
-  info += "\nStock Count: " + std::to_string(product->getStockCount()) +
-      "\nPrice (Individual): " + Product::convertCentsToReadable(product->getPriceIndividual()) +
-      "\nPrice (Business): " + Product::convertCentsToReadable(product->getPriceBusiness());
-
-  return info;
-}
 
 
 /**
