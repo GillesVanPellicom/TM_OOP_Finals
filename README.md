@@ -1,6 +1,6 @@
 # OOP - Final project
 
-Mockup garage business POS/DB software made in C++ (OOP) as final assignment for Thomas More practice enterprise course, year 2024-2025.
+Mockup garage business POS/DB software made in C++ (OOP) as final assignment for Thomas More OOP course, year 2024-2025.
 
 ## Build requirements
 - Linux or macOS build environement (windows was not tested, CMake config would probably require alterations)
