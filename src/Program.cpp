@@ -14,12 +14,14 @@ void Program::serialize(const std::string& filePath) const {
 
 
   // Products
-  nlohmann::json products_array = nlohmann::json::array();
-  for (const auto& p : products) {
-    // Add to the products array
-    products_array.push_back(p->serialize());
+  if (!products.empty()) {
+    nlohmann::json products_array = nlohmann::json::array();
+    for (const auto& p : products) {
+      // Add to the products array
+      products_array.push_back(p->serialize());
+    }
+    j["products"] = products_array;
   }
-  j["products"] = products_array;
   // END Products
 
 
@@ -139,15 +141,27 @@ std::shared_ptr<SequentialMenu> Program::createAddCustomerMenu() {
   _menu->addCollection("Enter the first name");
   _menu->addCollection("Enter the last name");
   _menu->addCollection("Enter the address");
+  _menu->addCollection("Is business customer? (y/n)");
+
 
   // Set the handler to create and add the tire using collected inputs
   _menu->setHandler([this](const std::vector<std::string>& inputs) {
     try {
+      if (inputs[3].size() != 1) {
+        throw std::invalid_argument("Business customer must be a single character.");
+      }
+      const char isBusiness = static_cast<char>(std::tolower(static_cast<unsigned char>(inputs[3][0])));
+
+      if (isBusiness != 'y' && isBusiness != 'n') {
+        throw std::invalid_argument("Business customer must be y or n");
+      }
+
       // Create and add the customer
       this->customers.emplace_back(std::make_shared<Customer>(
         inputs[0],
         inputs[1],
-        inputs[2]
+        inputs[2],
+        isBusiness == 'y'
       ));
 
       std::cout << "\033[1;32mCustomer added successfully!\033[0m\n\n";
@@ -377,9 +391,16 @@ std::shared_ptr<SequentialMenu> Program::createCustomerFilterByQueryMenu(const s
 std::function<void()> Program::createCustomerOptionHandler(const std::shared_ptr<Customer>& customer,
                                                            const std::shared_ptr<Menu>& parent) {
   return [this, customer, parent]() {
+    std::string business;
+    if (customer->isBusinessCustomer()) {
+      business = "Business";
+    } else {
+      business = "Individual";
+    }
     const std::string customerInfo = "Name: " + customer->getFirstName() +
         "\nSurname: " + customer->getLastName() +
-        "\nAddress: " + customer->getAddress();
+        "\nAddress: " + customer->getAddress() +
+        "\nType: " + business;
 
     const auto inspectMenu = std::make_shared<ChoiceMenu>("Inspect Customer", nullptr);
     if (permissionLevel == ADMIN) {
@@ -554,21 +575,21 @@ void Program::init() {
   users["GYLS"] = std::make_shared<User>("Gilles", ADMIN);
   users["ALSTY"] = std::make_shared<User>("Alec", EMPLOYEE);
 
-  customers.emplace_back(std::make_shared<Customer>("Thomas", "Shelby", "22 Watery Lane, Birmingham"));
-  customers.emplace_back(std::make_shared<Customer>("James", "Moriarty", "Oxford University, London"));
-  customers.emplace_back(std::make_shared<Customer>("Gustavo", "Fring", "207 Arroyo Ave., Albuquerque, NM"));
-  customers.emplace_back(std::make_shared<Customer>("Hannah", "Blue", "505 Pine Ct"));
-  customers.emplace_back(std::make_shared<Customer>("Thomas", "Anderson", "101 Daffodil Rd"));
-  customers.emplace_back(std::make_shared<Customer>("Winston", "Smith", "606 Victory Mansions"));
-  customers.emplace_back(std::make_shared<Customer>("Paul", "Atreides", "Calidan"));
-  customers.emplace_back(std::make_shared<Customer>("Aberama", "Gold", "707 Spruce St"));
-  customers.emplace_back(std::make_shared<Customer>("William", "Turner", "21 Leftburough, Port Royal"));
-  customers.emplace_back(std::make_shared<Customer>("Benjamin", "Sisko", "Quarters no. 382, DS9"));
-  customers.emplace_back(std::make_shared<Customer>("Alice", "Kingsleigh", "123 Wonderland Ave"));
-  customers.emplace_back(std::make_shared<Customer>("Ellen", "Ripley", "2525 Hemlock Pl"));
-  customers.emplace_back(std::make_shared<Customer>("Cara", "Mitchell", "2626 Aspen St"));
-  customers.emplace_back(std::make_shared<Customer>("Spike", "Spiegel", "the Bebop"));
-  customers.emplace_back(std::make_shared<Customer>("Jack", "O'Neill", "2727 Walnut Ave, Colorado"));
+  customers.emplace_back(std::make_shared<Customer>("Thomas", "Shelby", "22 Watery Lane, Birmingham", false));
+  customers.emplace_back(std::make_shared<Customer>("James", "Moriarty", "Oxford University, London", true));
+  customers.emplace_back(std::make_shared<Customer>("Gustavo", "Fring", "207 Arroyo Ave., Albuquerque, NM", false));
+  customers.emplace_back(std::make_shared<Customer>("Hannah", "Blue", "505 Pine Ct", false));
+  customers.emplace_back(std::make_shared<Customer>("Thomas", "Anderson", "101 Daffodil Rd", true));
+  customers.emplace_back(std::make_shared<Customer>("Winston", "Smith", "606 Victory Mansions", false));
+  customers.emplace_back(std::make_shared<Customer>("Paul", "Atreides", "Calidan", true));
+  customers.emplace_back(std::make_shared<Customer>("Aberama", "Gold", "707 Spruce St", false));
+  customers.emplace_back(std::make_shared<Customer>("William", "Turner", "21 Leftburough, Port Royal", false));
+  customers.emplace_back(std::make_shared<Customer>("Benjamin", "Sisko", "Quarters no. 382, DS9", false));
+  customers.emplace_back(std::make_shared<Customer>("Alice", "Kingsleigh", "123 Wonderland Ave", true));
+  customers.emplace_back(std::make_shared<Customer>("Ellen", "Ripley", "2525 Hemlock Pl", true));
+  customers.emplace_back(std::make_shared<Customer>("Cara", "Mitchell", "2626 Aspen St", false));
+  customers.emplace_back(std::make_shared<Customer>("Spike", "Spiegel", "the Bebop", true));
+  customers.emplace_back(std::make_shared<Customer>("Jack", "O'Neill", "2727 Walnut Ave, Colorado", false));
 
   setupSession();
   initMenu();

@@ -25,10 +25,12 @@ class Customer {
 
     Customer(std::string first_name,
              std::string last_name,
-             std::string address)
+             std::string address,
+             bool business_customer)
       : firstName(std::move(first_name)),
         lastName(std::move(last_name)),
-        address(std::move(address)) {
+        address(std::move(address)),
+        businessCustomer(business_customer) {
     }
 
     // ╔════════════════════════════════════════╗

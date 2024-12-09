@@ -8,7 +8,7 @@
             "priceBusiness": 11550,
             "priceIndividual": 12075,
             "speedIndex": 72,
-            "stockCount": 63,
+            "stockCount": 50,
             "type": "tire",
             "width": 225
         },
@@ -56,7 +56,7 @@
             "priceBusiness": 19000,
             "priceIndividual": 20000,
             "speedIndex": 89,
-            "stockCount": 30,
+            "stockCount": 20,
             "type": "tire",
             "width": 275
         },
