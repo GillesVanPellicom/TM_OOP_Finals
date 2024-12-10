@@ -1,11 +1,12 @@
+#ifndef UUID_HPP
+#define UUID_HPP
+
+// STD
 #include <iostream>
 #include <random>
 #include <sstream>
 #include <iomanip>
 #include <array>
-
-#ifndef UUID_HPP
-#define UUID_HPP
 
 /**
   * @brief UUID generation class based on RFC 4122 spec.
