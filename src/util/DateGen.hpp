@@ -1,11 +1,20 @@
 #ifndef DATEGEN_HPP
 #define DATEGEN_HPP
 
-#include <iostream>
+// STD
 #include <chrono>
 #include <iomanip>
 #include <sstream>
 
+
+/**
+ * @brief Retrieves the current date and time in a formatted string.
+ *
+ * This function uses the system clock to obtain the current date and time,
+ * formats it as "YYYY-MM-DD HH:MM:SS", and returns the formatted string.
+ *
+ * @return A string containing the current date and time in the format "YYYY-MM-DD HH:MM:SS".
+ */
 inline std::string getCurrentDateTime() {
   // Get the current time
   auto now = std::chrono::system_clock::now();

@@ -6,15 +6,28 @@
 
 #ifndef UUID_HPP
 #define UUID_HPP
-/**
-  * UUID gen code
-  * Source: RFC 4122 spec.
-  */
 
+/**
+  * @brief UUID generation class based on RFC 4122 spec.
+  *
+  * This class provides a static method to generate a Version 4 UUID.
+  * The UUID is randomly generated with the appropriate variant and version bits
+  * set according to the RFC 4122 standard.
+  */
 class UUIDGen {
   public:
     using UUID = std::string;
-    // Static function to generate a UUID
+
+    /**
+      * @brief Generates a Version 4 UUID.
+      *
+      * This static function generates a UUID based on random values, adhering to the RFC 4122 specification.
+      * It generates 16 random bytes and then modifies specific bits to comply with the UUID version and variant requirements.
+      *
+      * SOURCE: ChatGPT
+      *
+      * @return A string representing the generated UUID in the format "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx".
+      */
     static std::string generateUUID() {
       // Seed random number generator
       static std::random_device rd;

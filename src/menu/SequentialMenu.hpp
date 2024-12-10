@@ -125,6 +125,7 @@ class SequentialMenu final : public Menu {
     // ╔════════════════════════════════════════╗
     // ║             Constructors               ║
     // ╚════════════════════════════════════════╝
+
     explicit SequentialMenu(const std::string& menu_name, const std::shared_ptr<Menu>& parent_menu = nullptr)
       : Menu(menu_name, parent_menu) {
     }
