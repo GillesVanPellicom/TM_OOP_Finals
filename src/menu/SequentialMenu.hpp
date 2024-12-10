@@ -1,24 +1,51 @@
+// ╔══════════════════════════════════════════════════════════════════════════════════╗
+// ║ Name         : SequentialMenu.hpp                                                ║
+// ║ Description  : Implementation and definition of the class SequentialMenu         ║
+// ║ Inherit(s)   : Menu.hpp                                                          ║
+// ║ Author(s)    : "Gilles Van pellicom" <r0997008@student.thomasmore.be>            ║
+// ║ Date         : 2024/12/07                                                        ║
+// ╚══════════════════════════════════════════════════════════════════════════════════╝
+
 #ifndef SEQUENTIAL_MENU_HPP
 #define SEQUENTIAL_MENU_HPP
 
+// STD
 #include <iostream>
 #include <string>
 #include <functional>
 #include <vector>
 
-
+// Local
 #include "Menu.hpp"
 
+
+/**
+ * @brief A menu class that prompts users sequentially for input and processes the collected data.
+ *
+ * The `SequentialMenu` class extends the `Menu` class and adds functionality for sequentially collecting user inputs.
+ * Each input is prompted by a specified prompt, and the collected inputs are stored and processed using a handler function.
+ * After the inputs are collected, the handler function is called with the collected data.
+ * Once the handler processes the input, the menu will display the parent menu.
+ *
+ * Derived from `Menu`, this class is useful when you need to collect a series of inputs from the user and perform
+ * operations based on those inputs.
+ *
+ * @see Menu
+ */
 class SequentialMenu final : public Menu {
   private:
-    // Vector to hold the prompts and the corresponding input actions
+    // ╔════════════════════════════════════════╗
+    // ║              Attributes                ║
+    // ╚════════════════════════════════════════╝
+
+    // Collection prompts in order
     std::vector<std::string> inputPrompts;
-    // Vector to store the user input values
+    // Collection inputs in order
     std::vector<std::string> collectedInputs;
 
 
     // ╔════════════════════════════════════════╗
-    // ║               functions                ║
+    // ║           Private Methods              ║
     // ╚════════════════════════════════════════╝
 
     /**
@@ -26,17 +53,23 @@ class SequentialMenu final : public Menu {
      * @param prompt Prompt to be shown to user
      */
     void collect(const std::string& prompt) {
-      std::cout << "\n"<< prompt << ": \n> ";
+      std::cout << "\n" << prompt << ": \n> ";
 
       std::string var;
       std::getline(std::cin, var);
       collectedInputs.emplace_back(var);
     }
 
+
     /**
-      * @brief Handler function to process the collected inputs.
-      */
+     * @brief Handler function to process the collected inputs.
+     */
     std::function<void(const std::vector<std::string>&)> handler;
+
+
+    // ╔════════════════════════════════════════╗
+    // ║            Public Methods              ║
+    // ╚════════════════════════════════════════╝
 
   public:
     /**
@@ -72,6 +105,11 @@ class SequentialMenu final : public Menu {
       // Go one menu up
       getParentMenu()->display();
     }
+
+
+    // ╔════════════════════════════════════════╗
+    // ║           Getters & Setters            ║
+    // ╚════════════════════════════════════════╝
 
     /**
      * @brief Set the handler function to process collected inputs.

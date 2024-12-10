@@ -1,46 +1,65 @@
 // ╔══════════════════════════════════════════════════════════════════════════════════╗
-// ║ Name         : Invoice.h                                                      ║
-// ║ Description  : Lorem ipsum dolor sit amet                                        ║
-// ║                Lorem ipsum dolor sit amet                                        ║
+// ║ Name         : Invoice.h                                                         ║
+// ║ Description  : Definition of class Invoice                                       ║
 // ║ Author(s)    : "Gilles Van pellicom" <r0997008@student.thomasmore.be>            ║
-// ║ Date         : 2024/12/09                                                        ║                
-// ║ Version      : 1.0                                                               ║
-// ║ License      : GPL-3.0                                                           ║
+// ║ Date         : 2024/12/09                                                        ║
 // ╚══════════════════════════════════════════════════════════════════════════════════╝
 
 #ifndef INVOICE_H
 #define INVOICE_H
 
+// Local
 #include "../customer/Customer.h"
-#include "../../util/IdGen.hpp"
 #include "../../util/DateGen.hpp"
 #include "../../object/product/Product.h"
-#include "../../object/product/tire/Tire.h"
-#include "../../object/product/rim/Rim.h"
 
+
+/**
+ * @brief Class representing an invoice for customer purchases.
+ *
+ * The `Invoice` class holds all the necessary information for a customer's invoice,
+ * including customer details, purchased products, pricing, and discount information.
+ * It provides methods for serializing, deserializing, and managing invoice data.
+ *
+ * @note This class assumes that relevant customer and product data are already available
+ *       before the invoice is created.
+ *
+ * @see Customer
+ * @see Product
+ */
 class Invoice {
-  std::string invoiceName;
+  private:
+    // ╔════════════════════════════════════════╗
+    // ║              Attributes                ║
+    // ╚════════════════════════════════════════╝
 
-  UUIDGen::UUID customerId; // Can be safely dangled, no UUID references used after object construction
-  std::string firstName;
-  std::string lastName;
-  std::string address;
-  bool business = false;
-  // sub purchases for this invoice. Use UUID since pointers can't be serialized/deserialized
-  // productID, qty, productType, name, price
-  std::vector<std::tuple<UUIDGen::UUID, uint32_t, ProductType, std::string, std::uint64_t> > purchaseList;
+    std::string invoiceName;
+    UUIDGen::UUID customerId; // Can be safely dangled, no UUID references used after object construction
+    std::string firstName;
+    std::string lastName;
+    std::string address;
+    bool business = false;
+    // sub purchases for this invoice Use UUID since pointers can't be serialized/deserialized
+    // productID, qty, productType, name, price
+    std::vector<std::tuple<UUIDGen::UUID, uint32_t, ProductType, std::string, std::uint64_t> > purchaseList;
+    std::uint64_t noDiscountPrice = 0;
+    std::uint64_t finalPrice = 0;
+    std::uint64_t discountRate = 0;
 
-  // Prices can be recalculated each deserialization
-  std::uint64_t noDiscountPrice = 0;
-  std::uint64_t finalPrice = 0;
-  std::uint64_t discountRate = 0;
 
-  void calculatePrice();
+    // ╔════════════════════════════════════════╗
+    // ║           Private Methods              ║
+    // ╚════════════════════════════════════════╝
+
+    /**
+     * @brief Used internally to update price and discount attributes.
+     */
+    void calculatePrice();
 
   public:
-    [[nodiscard]] nlohmann::json serialize() const;
-
-    void deserialize(const nlohmann::json& j);
+    // ╔════════════════════════════════════════╗
+    // ║             Constructors               ║
+    // ╚════════════════════════════════════════╝
 
     explicit Invoice(const std::shared_ptr<Customer>& c)
       : invoiceName(c->getFirstName() + " " + c->getLastName() + " " + getCurrentDateTime()),
@@ -51,14 +70,49 @@ class Invoice {
         business(c->isBusinessCustomer()) {
     }
 
+
     explicit Invoice(const nlohmann::json& j) {
       deserialize(j);
     }
 
+    // ╔════════════════════════════════════════╗
+    // ║            Public Methods              ║
+    // ╚════════════════════════════════════════╝
+
+    /**
+     * @brief Serializes class to JSON.
+     * Used for recursive serialization
+     * @return class serialized as JSON object
+     */
+    [[nodiscard]] nlohmann::json serialize() const;
+
+
+    /**
+     * @brief Deserializes class from JSON.
+     * Used for recursive deserialization
+     * @param j JSON object from which to de-serialize
+     */
+    void deserialize(const nlohmann::json& j);
+
+
+    /**
+     * @brief Adds a purchase to the invoice?
+     * @param p product to be added
+     * @param count amount of product to be added
+     */
     void addPurchase(const std::shared_ptr<Product>& p, uint32_t count);
 
+
+    /**
+     * @brief Generates a string containing invoice details.
+     * @return info as string
+     */
     [[nodiscard]] std::string buildInvoiceInfo() const;
 
+
+    // ╔════════════════════════════════════════╗
+    // ║           Getters & Setters            ║
+    // ╚════════════════════════════════════════╝
 
     [[nodiscard]] UUIDGen::UUID getUUID() const {
       return customerId;

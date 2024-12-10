@@ -1,7 +1,7 @@
 // ╔══════════════════════════════════════════════════════════════════════════════════╗
-// ║ Name         : Rim.h                                                      ║
-// ║ Description  : Lorem ipsum dolor sit amet                                        ║
-// ║                Lorem ipsum dolor sit amet                                        ║
+// ║ Name         : Rim.h                                                             ║
+// ║ Description  : Definition of the class Rim                                       ║
+// ║ Inherit(s)   : Product.h                                                         ║
 // ║ Author(s)    : "Gilles Van pellicom" <r0997008@student.thomasmore.be>            ║
 // ║ Date         : 2024/12/07                                                        ║
 // ╚══════════════════════════════════════════════════════════════════════════════════╝
@@ -9,15 +9,33 @@
 #ifndef RIM_H
 #define RIM_H
 
+// STD
 #include <utility>
 
+// Local
 #include "../Product.h"
 
+/**
+  * @brief Enum used for type safety for material type
+  */
 enum RimMaterial {
   STEEL,
   ALUMINIUM
 };
 
+
+/**
+ * @brief Concrete class representing a rim product.
+ *
+ * The `Rim` class extends the abstract `Product` class and provides specific
+ * functionality for handling rim-related attributes, including width, color, and
+ * material type. It also implements methods for serializing, deserializing, and
+ * generating detailed information about the rim product.
+ *
+ * @note This class is a final class and cannot be subclassed.
+ *
+ * @see Product
+ */
 class Rim final : public Product {
   float width; // in inch
   std::string color;
@@ -49,6 +67,7 @@ class Rim final : public Product {
         material(material) {
     }
 
+
     explicit Rim(const nlohmann::json& j): Product() {
       Rim::deserialize(j);
     }
@@ -58,7 +77,6 @@ class Rim final : public Product {
     // ║           Getters & Setters            ║
     // ╚════════════════════════════════════════╝
 
-    // Width
     [[nodiscard]] float getWidth() const {
       return width;
     }
@@ -66,7 +84,7 @@ class Rim final : public Product {
       this->width = width;
     }
 
-    // Color
+
     [[nodiscard]] const std::string& getColor() const {
       return color;
     }
@@ -74,7 +92,7 @@ class Rim final : public Product {
       this->color = std::move(color);
     }
 
-    // Material
+
     [[nodiscard]] RimMaterial getMaterial() const {
       return material;
     }
@@ -98,10 +116,16 @@ class Rim final : public Product {
       this->material = material;
     }
 
-    ~Rim() override = default;
 
     // ╔════════════════════════════════════════╗
-    // ║               functions                ║
+    // ║              Destructors               ║
+    // ╚════════════════════════════════════════╝
+
+    ~Rim() override = default;
+
+
+    // ╔════════════════════════════════════════╗
+    // ║            Public Methods              ║
     // ╚════════════════════════════════════════╝
 
     /**
@@ -110,12 +134,17 @@ class Rim final : public Product {
       */
     [[nodiscard]] nlohmann::json serialize() override;
 
+
     /**
       * @brief Deserializes this specific object, used in recursive deserialization.
       */
     void deserialize(const nlohmann::json& j) override;
 
 
+    /**
+      * @brief Generates a string containing product details.
+      * @return info as string
+      */
     std::string buildProductInfo() override;
 };
 

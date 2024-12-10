@@ -1,7 +1,7 @@
 // ╔══════════════════════════════════════════════════════════════════════════════════╗
-// ║ Name         : Tire.h                                                      ║
-// ║ Description  : Lorem ipsum dolor sit amet                                        ║
-// ║                Lorem ipsum dolor sit amet                                        ║
+// ║ Name         : Tire.h                                                            ║
+// ║ Description  : Definition of the class Tire                                      ║
+// ║ Inherit(s)   : Product.h                                                         ║
 // ║ Author(s)    : "Gilles Van pellicom" <r0997008@student.thomasmore.be>            ║
 // ║ Date         : 2024/12/07                                                        ║
 // ╚══════════════════════════════════════════════════════════════════════════════════╝
@@ -13,10 +13,27 @@
 #include "../Product.h"
 
 
+/**
+ * @brief Concrete class representing a tire product.
+ *
+ * The `Tire` class extends the abstract `Product` class and provides specific
+ * functionality for handling tire-related attributes, including width, height, and
+ * speed index. It also implements methods for serializing, deserializing, and
+ * generating detailed information about the tire product.
+ *
+ * @note This class is a final class and cannot be subclassed.
+ *
+ * @see Product
+ */
 class Tire final : public Product {
-  std::uint32_t width; // in mm
-  std::uint32_t height; // in mm
-  char speedIndex;
+  private:
+    // ╔════════════════════════════════════════╗
+    // ║              Attributes                ║
+    // ╚════════════════════════════════════════╝
+
+    std::uint32_t width; // in mm
+    std::uint32_t height; // in mm
+    char speedIndex;
 
   public:
     // ╔════════════════════════════════════════╗
@@ -77,10 +94,16 @@ class Tire final : public Product {
       this->speedIndex = speed_index;
     }
 
-    ~Tire() override = default;
 
     // ╔════════════════════════════════════════╗
-    // ║               functions                ║
+    // ║              Destructors               ║
+    // ╚════════════════════════════════════════╝
+
+    ~Tire() override = default;
+
+
+    // ╔════════════════════════════════════════╗
+    // ║            Public Methods              ║
     // ╚════════════════════════════════════════╝
 
     /**
@@ -94,8 +117,12 @@ class Tire final : public Product {
       */
     void deserialize(const nlohmann::json& j) override;
 
-    std::string buildProductInfo() override;
 
+    /**
+      * @brief Generates a string containing product details.
+      * @return info as string
+      */
+    std::string buildProductInfo() override;
 };
 
 

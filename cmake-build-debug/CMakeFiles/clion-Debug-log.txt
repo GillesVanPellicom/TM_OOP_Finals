@@ -1,4 +1,4 @@
-/usr/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G "Unix Makefiles" -S "/mnt/c/Users/gille/Backup/Thomas More/C/TM_OOP_Finals" -B "/mnt/c/Users/gille/Backup/Thomas More/C/TM_OOP_Finals/cmake-build-debug"
--- Configuring done
--- Generating done
--- Build files have been written to: /mnt/c/Users/gille/Backup/Thomas More/C/TM_OOP_Finals/cmake-build-debug
+/Users/gvp/Applications/CLion.app/Contents/bin/cmake/mac/aarch64/bin/cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MAKE_PROGRAM=/Users/gvp/Applications/CLion.app/Contents/bin/ninja/mac/aarch64/ninja -DCMAKE_C_COMPILER=/usr/bin/gcc -DCMAKE_CXX_COMPILER=/usr/bin/g++ -G Ninja -S /Users/gvp/CLionProjects/TM_OOP_Finals -B /Users/gvp/CLionProjects/TM_OOP_Finals/cmake-build-debug
+-- Configuring done (0.0s)
+-- Generating done (0.0s)
+-- Build files have been written to: /Users/gvp/CLionProjects/TM_OOP_Finals/cmake-build-debug

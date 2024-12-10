@@ -1,7 +1,6 @@
 // ╔══════════════════════════════════════════════════════════════════════════════════╗
-// ║ Name         : Customer.h                                                      ║
-// ║ Description  : Lorem ipsum dolor sit amet                                        ║
-// ║                Lorem ipsum dolor sit amet                                        ║
+// ║ Name         : Customer.h                                                        ║
+// ║ Description  : Definition of class Customer                                      ║
 // ║ Author(s)    : "Gilles Van pellicom" <r0997008@student.thomasmore.be>            ║
 // ║ Date         : 2024/12/07                                                        ║
 // ╚══════════════════════════════════════════════════════════════════════════════════╝
@@ -9,20 +8,38 @@
 #ifndef CUSTOMER_H
 #define CUSTOMER_H
 
+// STD
 #include <json.hpp>
 #include <utility>
-#include <vector>
 
+// Local
 #include "../../util/IdGen.hpp"
 
 
+/**
+ * @brief Class representing a customer in the system.
+ *
+ * The `Customer` class holds information about a customer, including their name, address,
+ * business status, and a unique identifier (UUID). It supports serialization and deserialization
+ * for saving and loading customer data, as well as the ability to modify and retrieve customer details.
+ *
+ * @note A `Customer` can represent both individual and business customers. The business status
+ *       is indicated by the `businessCustomer` attribute.
+ *
+ * @see UUIDGen
+ */
 class Customer {
-  std::string firstName;
-  std::string lastName;
-  std::string address;
-  bool businessCustomer = false;
+  private:
+    // ╔════════════════════════════════════════╗
+    // ║              Attributes                ║
+    // ╚════════════════════════════════════════╝
 
-  UUIDGen::UUID uuid = UUIDGen::generateUUID();
+    std::string firstName;
+    std::string lastName;
+    std::string address;
+    bool businessCustomer = false;
+
+    UUIDGen::UUID uuid = UUIDGen::generateUUID();
 
   public:
     // ╔════════════════════════════════════════╗
@@ -43,11 +60,11 @@ class Customer {
       deserialize(j);
     }
 
+
     // ╔════════════════════════════════════════╗
     // ║           Getters & Setters            ║
     // ╚════════════════════════════════════════╝
 
-    // firstName
     [[nodiscard]] std::string getFirstName() const {
       return firstName;
     }
@@ -55,7 +72,7 @@ class Customer {
       firstName = std::move(first_name);
     }
 
-    // lastName
+
     [[nodiscard]] std::string getLastName() const {
       return lastName;
     }
@@ -63,7 +80,7 @@ class Customer {
       this->lastName = std::move(last_name);
     }
 
-    // address
+
     [[nodiscard]] std::string getAddress() const {
       return address;
     }
@@ -71,7 +88,7 @@ class Customer {
       this->address = std::move(address);
     }
 
-    // businessCustomer
+
     [[nodiscard]] bool isBusinessCustomer() const {
       return businessCustomer;
     }
@@ -79,7 +96,7 @@ class Customer {
       businessCustomer = is_business_customer;
     }
 
-    // UUID
+
     [[nodiscard]] UUIDGen::UUID getUUID() const {
       return uuid;
     }
@@ -87,18 +104,23 @@ class Customer {
       this->uuid = uuid;
     }
 
+
     // ╔════════════════════════════════════════╗
-    // ║               functions                ║
+    // ║            Public Methods              ║
     // ╚════════════════════════════════════════╝
 
     /**
-      * @brief Serializes this specific object, used in recursive serialization.
-      * @return Object as JSON
+      * @brief Serializes class to JSON.
+      * Used for recursive serialization
+      * @return class serialized as JSON object
       */
-    [[nodiscard]] nlohmann::json serialize();
+    [[nodiscard]] nlohmann::json serialize() const;
+
 
     /**
-      * @brief Deserializes this specific object, used in recursive deserialization.
+      * @brief Deserializes class from JSON
+      * Used for recursive deserialization
+      * @param j JSON object from which to de-serialize
       */
     void deserialize(const nlohmann::json& j);
 };
