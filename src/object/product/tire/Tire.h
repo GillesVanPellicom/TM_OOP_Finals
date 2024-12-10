@@ -14,9 +14,9 @@
 
 
 class Tire final : public Product {
-  std::uint32_t width [[maybe_unused]]; // in mm
-  std::uint32_t height [[maybe_unused]]; // in mm
-  char speedIndex [[maybe_unused]];
+  std::uint32_t width; // in mm
+  std::uint32_t height; // in mm
+  char speedIndex;
 
   public:
     // ╔════════════════════════════════════════╗

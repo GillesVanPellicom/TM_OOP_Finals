@@ -26,14 +26,14 @@ class Product {
   // ║               Variables                ║
   // ╚════════════════════════════════════════╝
 
-  std::string name [[maybe_unused]];
-  std::string manufacturer [[maybe_unused]];
-  std::uint32_t diameter{}; // in mm
-  ProductType type{};
+  std::string name;
+  std::string manufacturer;
+  std::uint32_t diameter; // in mm
+  ProductType type;
 
-  std::uint32_t stockCount{}; // in ℕ_{0}
-  std::uint64_t priceIndividual{}; // in cents, euro
-  std::uint64_t priceBusiness{}; // in cents, euro
+  std::uint32_t stockCount; // in ℕ_{0}
+  std::uint64_t priceIndividual; // in cents, euro
+  std::uint64_t priceBusiness; // in cents, euro
 
   UUIDGen::UUID uuid = UUIDGen::generateUUID();
 

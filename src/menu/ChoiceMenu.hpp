@@ -10,6 +10,8 @@ class ChoiceMenu final : public Menu {
     std::map<int, MenuEntry> options;
     int optionCount = 1;
     bool shouldExit = false;
+    bool isInitialized = false;
+    std::shared_ptr<Menu> ptr_this;
 
   public:
     // ╔════════════════════════════════════════╗
@@ -37,6 +39,10 @@ class ChoiceMenu final : public Menu {
      * @param action function to be called
      */
     void addOption(std::string description, const std::function<void()>& action) {
+//        if (!isInitialized) {
+//            isInitialized = true;
+//init();
+//        }
       options[optionCount++] = {std::move(description), action};
     }
 
@@ -46,18 +52,22 @@ class ChoiceMenu final : public Menu {
      * @param submenu menu to be opened
      */
     void addOption(std::string description, const std::shared_ptr<Menu>& submenu) {
-      const auto parent = std::shared_ptr<Menu>(
-        this,
-        [](Menu*) {
-          // Prevent ownership transfer
-        });
+        if (!isInitialized) {
+            isInitialized = true;
+init();
+        }
 
-      submenu->setParentMenu(parent);
+      submenu->setParentMenu(ptr_this);
       options[optionCount++] = {
         std::move(description), [submenu]() {
           submenu->display();
         }
       };
+    }
+
+    void init() {
+        // Since this class is derived from Menu and Menu is the implementing cl
+        ptr_this = shared_from_this();
     }
 
 
@@ -92,8 +102,8 @@ class ChoiceMenu final : public Menu {
         options[choice].action();
 
         if (shouldExit) {
-          if (parentMenu) {
-            parentMenu->display(); // Return to the parent menu
+          if (parentMenu.lock()) {
+            getParentMenu()->display(); // Return to the parent menu
           } else {
             std::cout << "Goodbye.\n";
             exit(0);

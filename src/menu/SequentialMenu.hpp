@@ -70,7 +70,7 @@ class SequentialMenu final : public Menu {
 
       // waitForAnyKey(false);
       // Go one menu up
-      parentMenu->display();
+      getParentMenu()->display();
     }
 
     /**

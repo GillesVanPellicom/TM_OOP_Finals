@@ -16,10 +16,10 @@
 #include <functional>
 #include <map>
 
-class Menu {
+class Menu : public std::enable_shared_from_this<Menu> {
   protected:
     std::string menuName;
-    std::shared_ptr<Menu> parentMenu;
+    std::weak_ptr<Menu> parentMenu;
     std::string suffixText = "";
 
   public:
@@ -65,7 +65,7 @@ class Menu {
 
 
     [[nodiscard]] std::shared_ptr<Menu> getParentMenu() const {
-      return parentMenu;
+      return parentMenu.lock(); // Returns nullptr if parent expired
     }
     void setParentMenu(const std::shared_ptr<Menu>& parent_menu) {
       parentMenu = parent_menu;

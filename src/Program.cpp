@@ -136,7 +136,7 @@ void Program::setupSession() {
 
 void Program::removeProduct(const std::shared_ptr<Product>& productToRemove) {
   std::erase_if(products,
-                [&productToRemove](const std::shared_ptr<Product>& product) {
+                [productToRemove](const std::shared_ptr<Product>& product) {
                   return product == productToRemove;
                 });
 }
@@ -144,7 +144,7 @@ void Program::removeProduct(const std::shared_ptr<Product>& productToRemove) {
 
 void Program::removeCustomer(const std::shared_ptr<Customer>& customerToRemove) {
   std::erase_if(customers,
-                [&customerToRemove](const std::shared_ptr<Customer>& customer) {
+                [customerToRemove](const std::shared_ptr<Customer>& customer) {
                   return customer == customerToRemove;
                 });
 }
@@ -152,6 +152,7 @@ void Program::removeCustomer(const std::shared_ptr<Customer>& customerToRemove) 
 
 void Program::initMenu() {
   const auto stockMenu = std::make_shared<ChoiceMenu>("Stock menu");
+  stockMenu->init();
   stockMenu->addOption("Show all stock", createFullStockMenu());
   stockMenu->addOption("Filter stock", createStockFilterByQueryMenu(stockMenu));
   if (permissionLevel == ADMIN) {
@@ -160,6 +161,7 @@ void Program::initMenu() {
 
 
   const auto customerMenu = std::make_shared<ChoiceMenu>("Customers menu");
+  customerMenu->init();
   customerMenu->addOption("Show all customers", createFullCustomerMenu());
   customerMenu->addOption("Filter customers", createCustomerFilterByQueryMenu(customerMenu));
   customerMenu->addOption("Add new customer", createAddCustomerMenu());
@@ -167,6 +169,7 @@ void Program::initMenu() {
 
 
   const auto mainMenu = std::make_shared<ChoiceMenu>("Main menu");
+  mainMenu->init();
   mainMenu->addOption("Stock", stockMenu);
   mainMenu->addOption("Customers", customerMenu);
   mainMenu->addOption("Save changes", [this] { serialize("../mem.json"); });
@@ -179,8 +182,9 @@ std::shared_ptr<ChoiceMenu> Program::createAddInvoiceMenu(const std::shared_ptr<
   auto invoice = std::make_shared<Invoice>(c);
 
   auto _menu = std::make_shared<ChoiceMenu>("Add new invoice item", nullptr, false);
+  _menu->init();
   _menu->addOption("Done",
-                   [&invoice, this]() {
+                   [this, invoice]() {
                      for (const auto& purchase : invoice->getPurchaseList()) {
                        const auto& uuid = std::get<0>(purchase);
                        const uint32_t quantity = std::get<1>(purchase);
@@ -204,7 +208,7 @@ std::shared_ptr<ChoiceMenu> Program::createAddInvoiceMenu(const std::shared_ptr<
 
   for (const auto& product : products) {
     _menu->addOption(product->getName(),
-                     [&product, &_menu, &invoice, this] {
+                     [this, product, _menu, invoice] {
                        // Create a menu for entering quantity
                        const auto qtyMenu = std::make_shared<SequentialMenu>("Add new invoice item");
                        qtyMenu->addCollection("Enter qty");
@@ -216,7 +220,7 @@ std::shared_ptr<ChoiceMenu> Program::createAddInvoiceMenu(const std::shared_ptr<
                        }
 
                        // Set the handler for qtyMenu to process the quantity
-                       qtyMenu->setHandler([&product, &_menu, &invoice, this](const std::vector<std::string>& inputs) {
+                       qtyMenu->setHandler([product, _menu, invoice, this](const std::vector<std::string>& inputs) {
                          const uint32_t output_qty = std::stoul(inputs[0]);
 
                          // Validate quantity based on product type
@@ -423,6 +427,7 @@ std::shared_ptr<ChoiceMenu> Program::createAddStockMenu() {
     }
   });
   const auto _menu = std::make_shared<ChoiceMenu>("Add product");
+  _menu->init();
   _menu->addOption("Add tire", tireMenu);
   _menu->addOption("Add rim", rimMenu);
   return _menu;
@@ -431,7 +436,8 @@ std::shared_ptr<ChoiceMenu> Program::createAddStockMenu() {
 
 std::shared_ptr<ChoiceMenu> Program::createFullCustomerMenu() {
   auto _menu = std::make_shared<ChoiceMenu>("Customer menu");
-  for (const auto& customer : customers) {
+    _menu->init();
+  for (const auto &customer : customers) {
     const std::string& customerFullName = customer->getFirstName() + " " + customer->getLastName();
     _menu->addOption(customerFullName, createCustomerOptionHandler(customer, _menu));
   }
@@ -441,6 +447,7 @@ std::shared_ptr<ChoiceMenu> Program::createFullCustomerMenu() {
 
 std::shared_ptr<ChoiceMenu> Program::createFullStockMenu() {
   auto _menu = std::make_shared<ChoiceMenu>("Stock menu");
+    _menu->init();
   for (const auto& product : products) {
     _menu->addOption(product->getName(), createProductOptionHandler(product, _menu));
   }
@@ -449,6 +456,7 @@ std::shared_ptr<ChoiceMenu> Program::createFullStockMenu() {
 
 std::shared_ptr<ChoiceMenu> Program::createFullInvoiceMenu(const std::shared_ptr<Customer>& c) {
   auto _menu = std::make_shared<ChoiceMenu>("Invoice menu");
+    _menu->init();
   for (const auto& invoice : invoices) {
     if (c != nullptr) {
       // Filter enabled
@@ -481,7 +489,7 @@ std::shared_ptr<SequentialMenu> Program::createCustomerFilterByQueryMenu(const s
   _menu->addCollection("Search query");
 
   // Handler for user input
-  _menu->setHandler([this, &parent, &_menu](const std::vector<std::string>& inputs) {
+  _menu->setHandler([this, parent, _menu](const std::vector<std::string>& inputs) {
     if (inputs.empty()) {
       std::cerr << "Invalid input: No query provided." << std::endl;
       _menu->display();
@@ -504,6 +512,7 @@ std::shared_ptr<SequentialMenu> Program::createCustomerFilterByQueryMenu(const s
 
     // Initialize ChoiceMenu safely.
     const auto filteredFullCustomerMenu = std::make_shared<ChoiceMenu>("Filtered Stock Menu");
+    filteredFullCustomerMenu->init();
     if (!filteredFullCustomerMenu) {
       std::cerr << "Failed to create filtered stock menu!" << std::endl;
       return;
@@ -561,20 +570,20 @@ std::function<void()> Program::createCustomerOptionHandler(const std::shared_ptr
         "\nType    : " + business;
 
     const auto inspectMenu = std::make_shared<ChoiceMenu>("Inspect Customer", nullptr);
-
+    inspectMenu->init();
     inspectMenu->addOption("Show invoices",
-                           [&customer, this, &inspectMenu] {
+                           [this, customer, inspectMenu] {
                              const auto im = createFullInvoiceMenu(customer);
                              im->setParentMenu(inspectMenu);
                              im->display();
                            });
     inspectMenu->addOption("Create invoice",
-                           [&customer, this] {
+                           [this, customer] {
                              createAddInvoiceMenu(customer);
                            });
     if (permissionLevel == ADMIN) {
       inspectMenu->addOption("Remove Customer",
-                             [&customer, this]() {
+                             [this, customer]() {
                                removeCustomer(customer);
                                initMenu();
                              });
@@ -605,7 +614,7 @@ std::shared_ptr<SequentialMenu> Program::createStockFilterByQueryMenu(const std:
   _menu->addCollection("Search query");
 
   // Handler for user input
-  _menu->setHandler([this, &parent, &_menu](const std::vector<std::string>& inputs) {
+  _menu->setHandler([this, parent, _menu](const std::vector<std::string>& inputs) {
     if (inputs.empty()) {
       std::cerr << "Invalid input: No query provided." << std::endl;
       _menu->display();
@@ -628,6 +637,7 @@ std::shared_ptr<SequentialMenu> Program::createStockFilterByQueryMenu(const std:
 
     // Initialize ChoiceMenu safely.
     const auto filteredFullStockMenu = std::make_shared<ChoiceMenu>("Filtered Stock Menu");
+    filteredFullStockMenu->init();
     if (!filteredFullStockMenu) {
       std::cerr << "Failed to create filtered stock menu!" << std::endl;
       return;
@@ -680,10 +690,11 @@ std::function<void()> Program::createProductOptionHandler(const std::shared_ptr<
     const std::string productInfo = product->buildProductInfo();
 
     const auto inspectMenu = std::make_shared<ChoiceMenu>("Inspect Product", nullptr);
+    inspectMenu->init();
     inspectMenu->addOption("Add stock", changeStockMenu);
     if (permissionLevel == ADMIN) {
       inspectMenu->addOption("Remove Product",
-                             [&product, this]() {
+                             [this, product]() {
                                removeProduct(product);
                                initMenu();
                              });
@@ -702,7 +713,7 @@ std::function<void()> Program::createInvoiceOptionHandler(const std::shared_ptr<
     const std::string invoiceInfo = invoice->buildInvoiceInfo();
 
     const auto inspectMenu = std::make_shared<ChoiceMenu>("Invoice Details", nullptr);
-
+    inspectMenu->init();
     inspectMenu->setSuffixText(invoiceInfo);
     inspectMenu->setParentMenu(parent);
     inspectMenu->display();

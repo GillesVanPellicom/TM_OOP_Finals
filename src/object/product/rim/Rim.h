@@ -19,9 +19,9 @@ enum RimMaterial {
 };
 
 class Rim final : public Product {
-  float width [[maybe_unused]]; // in inch
-  std::string color [[maybe_unused]];
-  RimMaterial material [[maybe_unused]]; // enum
+  float width; // in inch
+  std::string color;
+  RimMaterial material; // enum
 
   public:
     // ╔════════════════════════════════════════╗
