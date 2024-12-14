@@ -459,12 +459,12 @@ std::shared_ptr<SequentialMenu> Program::createEditStockMenu(const std::shared_p
   _menu->addCollection("Edit the diameter (in inches) [" + std::to_string(p->getDiameter()) + "]");
 
   // Additional fields for Tire or Rim
-  if (auto tire = std::dynamic_pointer_cast<Tire>(p)) {
+  if (const auto tire = std::dynamic_pointer_cast<Tire>(p)) {
     // Tire-specific fields
     _menu->addCollection("Edit the width (in mm) [" + std::to_string(tire->getWidth()) + "]");
     _menu->addCollection("Edit the height (in mm) [" + std::to_string(tire->getHeight()) + "]");
     _menu->addCollection("Edit the speed index (a single character) [" + std::string(1, tire->getSpeedIndex()) + "]");
-  } else if (auto rim = std::dynamic_pointer_cast<Rim>(p)) {
+  } else if (const auto rim = std::dynamic_pointer_cast<Rim>(p)) {
     // Rim-specific fields
     _menu->addCollection("Edit the width (in mm) [" + std::to_string(rim->getWidth()) + "]");
     _menu->addCollection("Edit the color [" + rim->getColor() + "]");
