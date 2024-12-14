@@ -1,7 +1,6 @@
 // ╔══════════════════════════════════════════════════════════════════════════════════╗
-// ║ Name         : Program.cpp                                                      ║
-// ║ Description  : Lorem ipsum dolor sit amet                                        ║
-// ║                Lorem ipsum dolor sit amet                                        ║
+// ║ Name         : Program.cpp                                                       ║
+// ║ Description  : Implementation of the Program class                               ║
 // ║ Author(s)    : "Gilles Van pellicom" <r0997008@student.thomasmore.be>            ║
 // ║ Date         : 2024/12/08                                                        ║
 // ╚══════════════════════════════════════════════════════════════════════════════════╝
@@ -501,9 +500,9 @@ std::shared_ptr<SequentialMenu> Program::createEditStockMenu(const std::shared_p
 
         // Compare the lowercase input with the possible materials
         if (materialInput == "aluminium") {
-          rim->setMaterial(RimMaterial::ALUMINIUM);
+          rim->setMaterial(ALUMINIUM);
         } else if (materialInput == "steel") {
-          rim->setMaterial(RimMaterial::STEEL);
+          rim->setMaterial(STEEL);
         } else if (!materialInput.empty()) {
           throw std::invalid_argument("Invalid material type. Please use 'aluminium' or 'steel'.");
         }

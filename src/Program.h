@@ -1,7 +1,6 @@
 // ╔══════════════════════════════════════════════════════════════════════════════════╗
-// ║ Name         : Program.h                                                      ║
-// ║ Description  : Lorem ipsum dolor sit amet                                        ║
-// ║                Lorem ipsum dolor sit amet                                        ║
+// ║ Name         : Program.h                                                         ║
+// ║ Description  : Definition of the Program class                                   ║
 // ║ Author(s)    : "Gilles Van pellicom" <r0997008@student.thomasmore.be>            ║
 // ║ Date         : 2024/12/08                                                        ║
 // ╚══════════════════════════════════════════════════════════════════════════════════╝
@@ -27,6 +26,9 @@
 
 class Program {
   private:
+    // ╔════════════════════════════════════════╗
+    // ║              Attributes                ║
+    // ╚════════════════════════════════════════╝
     std::unordered_map<std::string, std::shared_ptr<User> > users;
     std::vector<std::shared_ptr<Product> > products;
     std::vector<std::shared_ptr<Customer> > customers;
@@ -34,6 +36,11 @@ class Program {
     std::vector<std::shared_ptr<Company> > companies;
     std::string cuid; // Current User ID
     UserPermissionLevel permissionLevel = EMPLOYEE; // Default is EMPLOYEE
+
+
+    // ╔════════════════════════════════════════╗
+    // ║           Private Methods              ║
+    // ╚════════════════════════════════════════╝
 
     /**
    * @brief Saves contents of program to memory
@@ -51,11 +58,23 @@ class Program {
     void deserialize(const std::string& filePath);
 
 
-    void removeProduct(const std::shared_ptr<Product>& productToRemove);
-    void removeCustomer(const std::shared_ptr<Customer>& customerToRemove);
     /**
-   * @brief Asks user for their UID and sets up session permissions accordingly
-   */
+     * @brief Removes a Product object from the collection
+     * @param productToRemove pointer to the Product object
+     */
+    void removeProduct(const std::shared_ptr<Product>& productToRemove);
+
+
+    /**
+    * @brief Removes a Customer object from the collection
+    * @param customerToRemove pointer to the Customer object
+    */
+    void removeCustomer(const std::shared_ptr<Customer>& customerToRemove);
+
+
+    /**
+     * @brief Asks user for their UID and sets up session permissions accordingly
+     */
     void setupSession();
 
 
@@ -63,6 +82,49 @@ class Program {
     * @brief Entrypoint for the menu tree. Loads main menu.
     */
     void initMenu();
+
+
+    /**
+     * @brief Helper function used to locate a Product by UUID
+     * @param uuid UUID from the Product object to be located
+     * @return shared_ptr to an object of type Product
+     */
+    [[nodiscard]] std::shared_ptr<Product> getProductByUUID(const UUIDGen::UUID& uuid);
+
+
+    /**
+    * @brief Helper function used to locate a Company by UUID
+    * @param uuid UUID from the Company object to be located
+    * @return shared_ptr to an object of type Company
+    */
+    [[nodiscard]] std::shared_ptr<Company> getCompanyByUUID(const UUIDGen::UUID& uuid);
+
+
+    /**
+    * @brief Deserializes a JSON collection into a vector of shared pointers to type T.
+    * @param j The JSON object containing the data.
+    * @param key The key in the JSON object to retrieve the collection from.
+    * @param collection The vector to populate with deserialized elements.
+    * @tparam T The type of the elements in the collection.
+    */
+    template<typename T>
+    void deserializeCollection(const nlohmann::json& j,
+                               const std::string& key,
+                               std::vector<std::shared_ptr<T> >& collection);
+
+
+    /**
+    * @brief Serializes a vector of shared pointers to type T into a JSON object.
+    * @note Object in collection must have a serialize() function which outputs a nlohmann JSON object.
+    * @param collection The vector of shared pointers to serialize.
+    * @param key The key to use in the JSON object.
+    * @param j The JSON object to populate with the serialized data.
+    * @tparam T The type of the elements in the collection.
+    */
+    template<typename T>
+    void serializeCollection(const std::vector<std::shared_ptr<T> >& collection,
+                             const std::string& key,
+                             nlohmann::json& j) const;
 
 
     // Following are all menu-related functions which should only be called internally.
@@ -86,62 +148,31 @@ class Program {
     static std::shared_ptr<SequentialMenu> createChangeStockMenu(const std::shared_ptr<Product>& product);
     std::shared_ptr<SequentialMenu> createEditCustomerMenu(const std::shared_ptr<Customer>& customer);
     std::shared_ptr<SequentialMenu> createEditStockMenu(const std::shared_ptr<Product>& p);
-      /**
-       * @brief Helper function used to locate a Product by UUID
-       * @param uuid UUID from the Product object to be located
-       * @return shared_ptr to an object of type Product
-       */
-      [[nodiscard]] std::shared_ptr<Product> getProductByUUID(const UUIDGen::UUID& uuid);
 
+  public:
+    // ╔════════════════════════════════════════╗
+    // ║            Public Methods              ║
+    // ╚════════════════════════════════════════╝
 
-      /**
-      * @brief Helper function used to locate a Company by UUID
-      * @param uuid UUID from the Company object to be located
-      * @return shared_ptr to an object of type Company
-      */
-      [[nodiscard]] std::shared_ptr<Company> getCompanyByUUID(const UUIDGen::UUID& uuid);
-
-
-      /**
-      * @brief Deserializes a JSON collection into a vector of shared pointers to type T.
-      *
-      * @param j The JSON object containing the data.
-      * @param key The key in the JSON object to retrieve the collection from.
-      * @param collection The vector to populate with deserialized elements.
-      * @tparam T The type of the elements in the collection.
-      */
-      template
-      <
-      typename T >
-
-      void deserializeCollection(const nlohmann::json& j,
-                                 const std::string& key,
-                                 std::vector<std::shared_ptr<T> >& collection);
-
-
-      /**
-      * @brief Serializes a vector of shared pointers to type T into a JSON object.
-      * @note Object in collection must have a serialize() function which outputs a nlohmann JSON object.
-      * @param collection The vector of shared pointers to serialize.
-      * @param key The key to use in the JSON object.
-      * @param j The JSON object to populate with the serialized data.
-      * @tparam T The type of the elements in the collection.
-      */
-      template
-      <
-      typename T >
-
-      void serializeCollection(const std::vector<std::shared_ptr<T> >& collection,
-                               const std::string& key,
-                               nlohmann::json& j) const;
-
-      public
-      :
-      /**
+    /**
       * @brief Handles full software initialization.
       */
-      void init();
-    };
+    void init();
+
+
+    // ╔════════════════════════════════════════╗
+    // ║             Constructors               ║
+    // ╚════════════════════════════════════════╝
+
+    Program() = default;
+
+
+    // ╔════════════════════════════════════════╗
+    // ║              Destructors               ║
+    // ╚════════════════════════════════════════╝
+
+    ~Program() = default;
+};
 
 
 #endif //PROGRAM_H
