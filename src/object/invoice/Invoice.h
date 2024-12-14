@@ -45,6 +45,7 @@ class Invoice {
     std::uint64_t noDiscountPrice = 0;
     std::uint64_t finalPrice = 0;
     std::uint64_t discountRate = 0;
+    std::uint64_t businessDiscount = 0;
 
 
     // ╔════════════════════════════════════════╗
@@ -61,19 +62,28 @@ class Invoice {
     // ║             Constructors               ║
     // ╚════════════════════════════════════════╝
 
-    explicit Invoice(const std::shared_ptr<Customer>& c)
+    explicit Invoice(const std::shared_ptr<Customer>& c, const uint32_t businessDiscount)
       : invoiceName(c->getFirstName() + " " + c->getLastName() + " " + getCurrentDateTime()),
         customerId(c->getUUID()),
         firstName(c->getFirstName()),
         lastName(c->getLastName()),
         address(c->getAddress()),
-        business(c->isBusinessCustomer()) {
+        business(c->isBusinessCustomer()),
+        businessDiscount(businessDiscount) {
     }
 
 
     explicit Invoice(const nlohmann::json& j) {
       deserialize(j);
     }
+
+
+    // ╔════════════════════════════════════════╗
+    // ║              Destructors               ║
+    // ╚════════════════════════════════════════╝
+
+    ~Invoice() = default;
+
 
     // ╔════════════════════════════════════════╗
     // ║            Public Methods              ║

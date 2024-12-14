@@ -8,46 +8,40 @@
 
 #include "Program.h"
 
-#include "object/invoice/Invoice.h"
+
+template<typename T>
+void Program::deserializeCollection(const nlohmann::json& j,
+                                    const std::string& key,
+                                    std::vector<std::shared_ptr<T> >& collection) {
+  if (j.contains(key) && j[key].is_array()) {
+    for (const auto& json : j[key]) {
+      collection.emplace_back(std::make_shared<T>(json));
+    }
+  }
+}
+
+
+template<typename T>
+void Program::serializeCollection(const std::vector<std::shared_ptr<T> >& collection,
+                                  const std::string& key,
+                                  nlohmann::json& j) const {
+  if (!collection.empty()) {
+    nlohmann::json a = nlohmann::json::array();
+    for (const auto& item : collection) {
+      a.push_back(item->serialize());
+    }
+    j[key] = a;
+  }
+}
 
 
 void Program::serialize(const std::string& filePath) const {
   nlohmann::json j; // JSON root
 
-
-  // Products
-  if (!products.empty()) {
-    nlohmann::json a = nlohmann::json::array();
-    for (const auto& p : products) {
-      // Add to the products array
-      a.push_back(p->serialize());
-    }
-    j["products"] = a;
-  }
-  // END Products
-
-  // Customers
-  if (!customers.empty()) {
-    nlohmann::json a = nlohmann::json::array();
-    for (const auto& p : customers) {
-      // Add to the customers array
-      a.push_back(p->serialize());
-    }
-    j["customers"] = a;
-  }
-  // END Customers
-
-  // Invoices
-  if (!invoices.empty()) {
-    nlohmann::json a = nlohmann::json::array();
-    for (const auto& i : invoices) {
-      // Add to the customers array
-      a.push_back(i->serialize());
-    }
-    j["invoices"] = a;
-  }
-  // END Invoices
-
+  serializeCollection(products, "products", j);
+  serializeCollection(customers, "customers", j);
+  serializeCollection(invoices, "invoices", j);
+  serializeCollection(companies, "companies", j);
 
   // Write the JSON to a file
   std::ofstream outputFile(filePath);
@@ -86,22 +80,9 @@ void Program::deserialize(const std::string& filePath) {
   }
   // END Products
 
-  // Customers
-  if (j.contains("customers") && j["customers"].is_array()) {
-    for (const auto& json : j["customers"]) {
-      customers.emplace_back(std::make_shared<Customer>(json));
-    }
-  }
-  // END Customers
-
-  // Invoices
-  if (j.contains("invoices") && j["invoices"].is_array()) {
-    for (const auto& json : j["invoices"]) {
-      invoices.emplace_back(std::make_shared<Invoice>(json));
-    }
-  }
-  // END Invoices
-
+  deserializeCollection(j, "customers", customers);
+  deserializeCollection(j, "invoices", invoices);
+  deserializeCollection(j, "companies", companies);
 
   std::cout << "Loading from memory completed.\n" << std::endl;
 }
@@ -179,12 +160,25 @@ void Program::initMenu() {
 
 
 std::shared_ptr<ChoiceMenu> Program::createAddInvoiceMenu(const std::shared_ptr<Customer>& c) {
-  auto invoice = std::make_shared<Invoice>(c);
+  uint32_t businessDiscount = 0;
+
+  // If company exists
+  if (const auto company = getCompanyByUUID(c->getCompanyUUID())) {
+    // get volume discount
+    businessDiscount = company->getVolumeDiscount();
+  }
+  auto invoice = std::make_shared<Invoice>(c, businessDiscount);
+
 
   auto _menu = std::make_shared<ChoiceMenu>("Add new invoice item", nullptr, false);
   _menu->init();
   _menu->addOption("Done",
                    [this, invoice]() {
+                     if (invoice->getPurchaseList().empty()) {
+                       std::cout << "\033[1;32mInvoice creation successfully aborted.\033[0m\n" << std::endl;
+                       initMenu();
+                     }
+
                      for (const auto& purchase : invoice->getPurchaseList()) {
                        const auto& uuid = std::get<0>(purchase);
                        const uint32_t quantity = std::get<1>(purchase);
@@ -208,7 +202,7 @@ std::shared_ptr<ChoiceMenu> Program::createAddInvoiceMenu(const std::shared_ptr<
 
   for (const auto& product : products) {
     _menu->addOption(product->getName(),
-                     [this, product, _menu, invoice] {
+                     [this, product, _menu, invoice, c] {
                        // Create a menu for entering quantity
                        const auto qtyMenu = std::make_shared<SequentialMenu>("Add new invoice item");
                        qtyMenu->addCollection("Enter qty");
@@ -220,7 +214,7 @@ std::shared_ptr<ChoiceMenu> Program::createAddInvoiceMenu(const std::shared_ptr<
                        }
 
                        // Set the handler for qtyMenu to process the quantity
-                       qtyMenu->setHandler([product, _menu, invoice, this](const std::vector<std::string>& inputs) {
+                       qtyMenu->setHandler([product, _menu, invoice, this, c](const std::vector<std::string>& inputs) {
                          const uint32_t output_qty = std::stoul(inputs[0]);
 
                          // Validate quantity based on product type
@@ -249,7 +243,9 @@ std::shared_ptr<ChoiceMenu> Program::createAddInvoiceMenu(const std::shared_ptr<
                          }
 
                          // Temporarily add the product and quantity to the invoice without altering stock
-                         invoice->addPurchase(product, output_qty);
+                         invoice->addPurchase(
+                           product,
+                           output_qty);
 
                          std::cout << "Product added to the invoice temporarily. Confirm or make further changes." <<
                              std::endl;
@@ -281,12 +277,28 @@ std::shared_ptr<Product> Program::getProductByUUID(const UUIDGen::UUID& uuid) {
 }
 
 
+std::shared_ptr<Company> Program::getCompanyByUUID(const UUIDGen::UUID& uuid) {
+  const auto it = std::ranges::find_if(companies,
+                                       [&uuid](const std::shared_ptr<Company>& company) {
+                                         return company->getUUID() == uuid;
+                                       });
+
+  if (it != companies.end()) {
+    return *it; // Return the company if found
+  }
+
+  return nullptr; // Return null if no company matches the UUID
+}
+
+
 std::shared_ptr<SequentialMenu> Program::createAddCustomerMenu() {
   const auto _menu = std::make_shared<SequentialMenu>("Add new customer");
   _menu->addCollection("Enter the first name");
   _menu->addCollection("Enter the last name");
   _menu->addCollection("Enter the address");
   _menu->addCollection("Is business customer? (y/n)");
+  _menu->addCollection("Enter the VAT number (ignored if not a business customer)");
+  _menu->addCollection("Enter volume discount (E.g. 10 = 10%, no decimals) (ignored if not a business customer)");
 
 
   // Set the handler to create and add the tire using collected inputs
@@ -301,13 +313,29 @@ std::shared_ptr<SequentialMenu> Program::createAddCustomerMenu() {
         throw std::invalid_argument("Business customer must be y or n");
       }
 
-      // Create and add the customer
-      this->customers.emplace_back(std::make_shared<Customer>(
-        inputs[0],
-        inputs[1],
-        inputs[2],
-        isBusiness == 'y'
-      ));
+
+      if (isBusiness == 'y') {
+        this->companies.emplace_back(std::make_shared<Company>(
+          inputs[4],
+          stoi(inputs[5])));
+
+        this->customers.emplace_back(std::make_shared<Customer>(
+          inputs[0],
+          inputs[1],
+          inputs[2],
+          true,
+          this->companies.back()->getUUID()
+        ));
+      } else {
+        // Create and add the customer
+        this->customers.emplace_back(std::make_shared<Customer>(
+          inputs[0],
+          inputs[1],
+          inputs[2],
+          false
+        ));
+      }
+
 
       std::cout << "\033[1;32mCustomer added successfully!\033[0m\n\n";
       initMenu();
@@ -436,8 +464,8 @@ std::shared_ptr<ChoiceMenu> Program::createAddStockMenu() {
 
 std::shared_ptr<ChoiceMenu> Program::createFullCustomerMenu() {
   auto _menu = std::make_shared<ChoiceMenu>("Customer menu");
-    _menu->init();
-  for (const auto &customer : customers) {
+  _menu->init();
+  for (const auto& customer : customers) {
     const std::string& customerFullName = customer->getFirstName() + " " + customer->getLastName();
     _menu->addOption(customerFullName, createCustomerOptionHandler(customer, _menu));
   }
@@ -447,16 +475,17 @@ std::shared_ptr<ChoiceMenu> Program::createFullCustomerMenu() {
 
 std::shared_ptr<ChoiceMenu> Program::createFullStockMenu() {
   auto _menu = std::make_shared<ChoiceMenu>("Stock menu");
-    _menu->init();
+  _menu->init();
   for (const auto& product : products) {
     _menu->addOption(product->getName(), createProductOptionHandler(product, _menu));
   }
   return _menu;
 }
 
-std::shared_ptr<ChoiceMenu> Program::createFullInvoiceMenu(const std::shared_ptr<Customer>& c) {
+
+std::shared_ptr<ChoiceMenu> Program::createFullInvoiceMenu(const std::shared_ptr<Customer>& c) const {
   auto _menu = std::make_shared<ChoiceMenu>("Invoice menu");
-    _menu->init();
+  _menu->init();
   for (const auto& invoice : invoices) {
     if (c != nullptr) {
       // Filter enabled
@@ -554,21 +583,10 @@ std::shared_ptr<SequentialMenu> Program::createCustomerFilterByQueryMenu(const s
   return _menu;
 }
 
+
 std::function<void()> Program::createCustomerOptionHandler(const std::shared_ptr<Customer>& customer,
                                                            const std::shared_ptr<Menu>& parent) {
   return [this, customer, parent]() {
-    std::string business;
-    if (customer->isBusinessCustomer()) {
-      business = "Business";
-    } else {
-      business = "Individual";
-    }
-    const std::string customerInfo =
-        "Name    : " + customer->getFirstName() +
-        "\nSurname : " + customer->getLastName() +
-        "\nAddress : " + customer->getAddress() +
-        "\nType    : " + business;
-
     const auto inspectMenu = std::make_shared<ChoiceMenu>("Inspect Customer", nullptr);
     inspectMenu->init();
     inspectMenu->addOption("Show invoices",
@@ -588,7 +606,8 @@ std::function<void()> Program::createCustomerOptionHandler(const std::shared_ptr
                                initMenu();
                              });
     }
-    inspectMenu->setSuffixText(customerInfo);
+
+    inspectMenu->setSuffixText(customer->buildCustomerInfo(getCompanyByUUID(customer->getCompanyUUID())));
     inspectMenu->setParentMenu(parent);
     inspectMenu->display();
   };
@@ -722,7 +741,6 @@ std::function<void()> Program::createInvoiceOptionHandler(const std::shared_ptr<
 
 
 std::shared_ptr<SequentialMenu> Program::createChangeStockMenu(const std::shared_ptr<Product>& product) {
-  // NOLINT(*-convert-member-functions-to-static)
   auto _menu = std::make_shared<SequentialMenu>("Stock Menu");
   _menu->addCollection("Amount of stock to add");
   _menu->setHandler([product](const std::vector<std::string>& inputs) {
@@ -732,9 +750,6 @@ std::shared_ptr<SequentialMenu> Program::createChangeStockMenu(const std::shared
 }
 
 
-/**
- * @brief Handles full software initialization.
- */
 void Program::init() {
   deserialize("../mem.json");
 

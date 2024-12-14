@@ -14,6 +14,7 @@
 
 // Local
 #include "../../util/IdGen.hpp"
+#include "../company/Company.h"
 
 
 /**
@@ -41,6 +42,8 @@ class Customer {
 
     UUIDGen::UUID uuid = UUIDGen::generateUUID();
 
+    UUIDGen::UUID companyUUID = "N/A";
+
   public:
     // ╔════════════════════════════════════════╗
     // ║             Constructors               ║
@@ -49,12 +52,26 @@ class Customer {
     Customer(std::string first_name,
              std::string last_name,
              std::string address,
-             bool business_customer)
+             const bool business_customer)
       : firstName(std::move(first_name)),
         lastName(std::move(last_name)),
         address(std::move(address)),
         businessCustomer(business_customer) {
     }
+
+
+    Customer(std::string first_name,
+             std::string last_name,
+             std::string address,
+             const bool business_customer,
+             UUIDGen::UUID companyUUID)
+      : firstName(std::move(first_name)),
+        lastName(std::move(last_name)),
+        address(std::move(address)),
+        businessCustomer(business_customer),
+        companyUUID(std::move(companyUUID)) {
+    }
+
 
     explicit Customer(const nlohmann::json& j) {
       deserialize(j);
@@ -105,6 +122,21 @@ class Customer {
     }
 
 
+    [[nodiscard]] UUIDGen::UUID getCompanyUUID() const {
+      return companyUUID;
+    }
+    void setCompanyUUID(const UUIDGen::UUID& company_uuid) {
+      companyUUID = company_uuid;
+    }
+
+
+    // ╔════════════════════════════════════════╗
+    // ║              Destructors               ║
+    // ╚════════════════════════════════════════╝
+
+    ~Customer() = default;
+
+
     // ╔════════════════════════════════════════╗
     // ║            Public Methods              ║
     // ╚════════════════════════════════════════╝
@@ -123,6 +155,13 @@ class Customer {
       * @param j JSON object from which to de-serialize
       */
     void deserialize(const nlohmann::json& j);
+
+
+    /**
+   * @brief Generates a string containing invoice details.
+   * @return info as string
+   */
+    [[nodiscard]] std::string buildCustomerInfo(const std::shared_ptr<Company>& c) const;
 };
 
 

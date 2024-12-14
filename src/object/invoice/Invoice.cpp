@@ -36,11 +36,12 @@ void Invoice::calculatePrice() {
     }
   }
 
+
   if (business) {
     // Discount starting from 10pcs
     if (const unsigned int totalQty = tireQty + rimQty;
       totalQty >= 10) {
-      discountRate += 20;
+      discountRate += businessDiscount;
     }
   } else {
     // Discount starting from 4 tires
@@ -63,9 +64,6 @@ void Invoice::calculatePrice() {
 std::string Invoice::buildInvoiceInfo() const {
   std::ostringstream info;
 
-  // Invoice Header
-
-
   // Customer Information
   info << "Customer Name : " << firstName << " " << lastName << "\n"
       << "Address       : " << address << "\n"
@@ -81,7 +79,7 @@ std::string Invoice::buildInvoiceInfo() const {
   // Loop through the purchase list and add each product
   for (const auto& purchase : purchaseList) {
     auto [productID, quantity, productType, name, price] = purchase;
-    std::uint64_t totalPrice = price * quantity;
+    const std::uint64_t totalPrice = price * quantity;
 
     info
         << "║ " << std::setw(35) << std::left << name << " ║ "

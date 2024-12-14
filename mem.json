@@ -1,20 +1,50 @@
 {
+    "companies": [
+        {
+            "UUID": "3a28f9b6-dbdc-4272-b6e8-9c8d2341aad8",
+            "vat": "GB936491643",
+            "volumeDiscount": 30
+        },
+        {
+            "UUID": "af7c1fe6-d669-414e-b066-e9733f0de7a8",
+            "vat": "MA938655712",
+            "volumeDiscount": 20
+        },
+        {
+            "UUID": "08c71152-c552-42e7-b094-f510ff44e9cb",
+            "vat": "WY938628473",
+            "volumeDiscount": 20
+        },
+        {
+            "UUID": "c558a80a-f319-4c10-95d4-4282ef745b4b",
+            "vat": "GB461777260",
+            "volumeDiscount": 20
+        },
+        {
+            "UUID": "1ad1fccc-d279-46a0-8980-1d91afd6ba67",
+            "vat": "CA111111167",
+            "volumeDiscount": 20
+        }
+    ],
     "customers": [
         {
+            "CompanyUUID": "3a28f9b6-dbdc-4272-b6e8-9c8d2341aad8",
             "UUID": "ef735f99-5877-4755-95a4-cc634c328668",
             "address": "22 Watery Lane, Birmingham",
-            "business": false,
+            "business": true,
             "firstName": "Thomas",
             "lastName": "Shelby"
         },
         {
+            "CompanyUUID": "N/A",
             "UUID": "887d45cc-77f2-4d82-b343-2c72675449e6",
             "address": "Oxford University, London",
-            "business": true,
+            "business": false,
             "firstName": "James",
             "lastName": "Moriarty"
         },
         {
+            "CompanyUUID": "N/A",
             "UUID": "3c1de54a-d655-419b-ba96-7c574587ed23",
             "address": "207 Arroyo Ave., Albuquerque, NM",
             "business": false,
@@ -22,6 +52,7 @@
             "lastName": "Fring"
         },
         {
+            "CompanyUUID": "N/A",
             "UUID": "b24f4287-fb9e-4fda-8604-ee4feece83bb",
             "address": "505 Pine Ct",
             "business": false,
@@ -29,13 +60,15 @@
             "lastName": "Blue"
         },
         {
+            "CompanyUUID": "N/A",
             "UUID": "37a6d017-c188-4938-bd71-35303b2e736a",
             "address": "101 Daffodil Rd",
-            "business": true,
+            "business": false,
             "firstName": "Thomas",
             "lastName": "Anderson"
         },
         {
+            "CompanyUUID": "N/A",
             "UUID": "75c2439c-1d40-4dbe-a70e-a0c4187117b3",
             "address": "606 Victory Mansions",
             "business": false,
@@ -43,6 +76,7 @@
             "lastName": "Smith"
         },
         {
+            "CompanyUUID": "1ad1fccc-d279-46a0-8980-1d91afd6ba67",
             "UUID": "26faef25-9fb3-45e4-b8ad-f0723ec0cdfd",
             "address": "Calidan",
             "business": true,
@@ -50,6 +84,7 @@
             "lastName": "Atreides"
         },
         {
+            "CompanyUUID": "N/A",
             "UUID": "7f37d87e-dfab-4419-ba34-a17329b75c5d",
             "address": "707 Spruce St",
             "business": false,
@@ -57,6 +92,7 @@
             "lastName": "Gold"
         },
         {
+            "CompanyUUID": "N/A",
             "UUID": "a02e5ee2-f410-4bd2-99d5-867608e949b3",
             "address": "21 Leftburough, Port Royal",
             "business": false,
@@ -64,6 +100,7 @@
             "lastName": "Turner"
         },
         {
+            "CompanyUUID": "N/A",
             "UUID": "40be5f1a-1934-4585-8de1-26553b1d41ba",
             "address": "Quarters no. 382, DS9",
             "business": false,
@@ -71,6 +108,7 @@
             "lastName": "Sisko"
         },
         {
+            "CompanyUUID": "c558a80a-f319-4c10-95d4-4282ef745b4b",
             "UUID": "f7d1dae9-4722-4c9c-ba4d-8ad5e234e64b",
             "address": "123 Wonderland Ave",
             "business": true,
@@ -78,6 +116,7 @@
             "lastName": "Kingsleigh"
         },
         {
+            "CompanyUUID": "08c71152-c552-42e7-b094-f510ff44e9cb",
             "UUID": "95d1c116-d045-44b7-97b7-f9ac29c77400",
             "address": "2525 Hemlock Pl",
             "business": true,
@@ -85,6 +124,7 @@
             "lastName": "Ripley"
         },
         {
+            "CompanyUUID": "N/A",
             "UUID": "e405589c-e549-47fc-ac47-2d2b7e486f60",
             "address": "2626 Aspen St",
             "business": false,
@@ -92,6 +132,7 @@
             "lastName": "Mitchell"
         },
         {
+            "CompanyUUID": "af7c1fe6-d669-414e-b066-e9733f0de7a8",
             "UUID": "e105fa15-08f5-4587-921d-b2c2e18b71c0",
             "address": "the Bebop",
             "business": true,
@@ -99,6 +140,7 @@
             "lastName": "Spiegel"
         },
         {
+            "CompanyUUID": "N/A",
             "UUID": "c06b4ac5-5ad9-4f51-909d-f1123a759907",
             "address": "2727 Walnut Ave, Colorado",
             "business": false,
@@ -157,7 +199,7 @@
         },
         {
             "address": "the Bebop",
-            "business": true,
+            "business": false,
             "customerId": "e105fa15-08f5-4587-921d-b2c2e18b71c0",
             "discountRate": 0,
             "finalPrice": 23100,
@@ -177,7 +219,7 @@
         },
         {
             "address": "the Bebop",
-            "business": true,
+            "business": false,
             "customerId": "e105fa15-08f5-4587-921d-b2c2e18b71c0",
             "discountRate": 0,
             "finalPrice": 78200,
@@ -224,7 +266,7 @@
         },
         {
             "address": "123 Wonderland Ave",
-            "business": true,
+            "business": false,
             "customerId": "f7d1dae9-4722-4c9c-ba4d-8ad5e234e64b",
             "discountRate": 0,
             "finalPrice": 250000,
@@ -248,6 +290,47 @@
                     "qty": 2
                 }
             ]
+        },
+        {
+            "address": "22 Watery Lane, Birmingham",
+            "business": true,
+            "customerId": "ef735f99-5877-4755-95a4-cc634c328668",
+            "discountRate": 30,
+            "finalPrice": 343140,
+            "firstName": "Thomas",
+            "invoiceName": "Thomas Shelby 2024-12-14 00:54:38",
+            "lastName": "Shelby",
+            "noDiscountPrice": 490200,
+            "purchaseList": [
+                {
+                    "name": "WinterGrip X200",
+                    "price": 11550,
+                    "productID": "c491d4e3-985d-4b9b-873f-6f0b11c42c7e",
+                    "productType": 0,
+                    "qty": 4
+                },
+                {
+                    "name": "OffRoad Master OR900",
+                    "price": 34000,
+                    "productID": "ba468dc5-2e7a-42b3-9d75-13a60999d775",
+                    "productType": 1,
+                    "qty": 4
+                },
+                {
+                    "name": "CarbonXtreme C800",
+                    "price": 53000,
+                    "productID": "63732fad-ced7-4ffd-bcc1-e2b7fdec1353",
+                    "productType": 1,
+                    "qty": 4
+                },
+                {
+                    "name": "AlloyStyle A500",
+                    "price": 24000,
+                    "productID": "7557de7c-c169-4f0c-b71a-d9fd71bd5252",
+                    "productType": 1,
+                    "qty": 4
+                }
+            ]
         }
     ],
     "products": [
@@ -260,7 +343,7 @@
             "priceBusiness": 11550,
             "priceIndividual": 12075,
             "speedIndex": 72,
-            "stockCount": 45,
+            "stockCount": 41,
             "type": "tire",
             "width": 225
         },
@@ -325,7 +408,7 @@
             "name": "AlloyStyle A500",
             "priceBusiness": 24000,
             "priceIndividual": 25000,
-            "stockCount": 38,
+            "stockCount": 34,
             "type": "rim",
             "width": 8.0
         },
@@ -351,7 +434,7 @@
             "name": "CarbonXtreme C800",
             "priceBusiness": 53000,
             "priceIndividual": 55000,
-            "stockCount": 6,
+            "stockCount": 2,
             "type": "rim",
             "width": 9.0
         },
@@ -377,7 +460,7 @@
             "name": "OffRoad Master OR900",
             "priceBusiness": 34000,
             "priceIndividual": 35000,
-            "stockCount": 11,
+            "stockCount": 7,
             "type": "rim",
             "width": 10.0
         }

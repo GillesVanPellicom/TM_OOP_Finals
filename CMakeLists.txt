@@ -33,6 +33,8 @@ set(SOURCE_FILES src/main.cpp
         src/Program.h
         src/object/invoice/Invoice.cpp
         src/object/invoice/Invoice.h
+        src/object/company/Company.cpp
+        src/object/company/Company.h
 )
 
 # Executable Creation
