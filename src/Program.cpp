@@ -291,12 +291,112 @@ std::shared_ptr<Company> Program::getCompanyByUUID(const UUIDGen::UUID& uuid) {
 }
 
 
+std::shared_ptr<SequentialMenu> Program::createEditCustomerMenu(const std::shared_ptr<Customer>& customer) {
+  const auto _menu = std::make_shared<SequentialMenu>("Edit customer");
+
+  // Add input fields, without pre-filling them with the existing values
+  _menu->addCollection("Edit the first name [" + customer->getFirstName() + "]");
+  _menu->addCollection("Edit the last name [" + customer->getLastName() + "]");
+  _menu->addCollection("Edit the address [" + customer->getAddress() + "]");
+
+  // Allow editing business status, based on the current customer's business status
+  const std::string businessStatus = customer->isBusinessCustomer() ? "y" : "n";
+  _menu->addCollection("Is business customer? (y/n) [" + businessStatus + "]");
+
+  // If the customer is a business customer, allow editing VAT number and volume discount
+  if (customer->isBusinessCustomer()) {
+    _menu->addCollection("Edit the VAT number [" + customer->getAddress() + "]");
+    _menu->addCollection("Edit volume discount [" + customer->getAddress() + "]");
+  }
+
+  // Set the handler to modify the existing customer using collected inputs
+  _menu->setHandler([this, customer](const std::vector<std::string>& inputs) {
+    try {
+      char isBusiness;
+      if (inputs[3].empty()) {
+        // Retain old value
+        isBusiness = customer->isBusinessCustomer() ? 'y' : 'n';
+      } else {
+        // New value handler
+        if (inputs[3].size() != 1) {
+          throw std::invalid_argument("Business customer must be a single character.");
+        }
+        isBusiness = static_cast<char>(std::tolower(static_cast<unsigned char>(inputs[3][0])));
+
+        if (isBusiness != 'y' && isBusiness != 'n') {
+          throw std::invalid_argument("Business customer must be y or n");
+        }
+      }
+
+
+      // Set the new values to the customer or keep old ones
+      customer->setFirstName(inputs[0].empty() ? customer->getFirstName() : inputs[0]);
+      customer->setLastName(inputs[1].empty() ? customer->getLastName() : inputs[1]);
+      customer->setAddress(inputs[2].empty() ? customer->getAddress() : inputs[2]);
+      customer->setBusinessCustomer(inputs[3].empty() ? customer->isBusinessCustomer() : isBusiness == 'y');
+
+      if (isBusiness == 'y') {
+        // Set the business-specific details (if modified)
+        if (const auto company = getCompanyByUUID(customer->getCompanyUUID()); !company) {
+          // No company found, prompt the user to create one via another menu
+          const auto companyMenu = std::make_shared<SequentialMenu>("Edit customer");
+
+          // Collect VAT and volume discount
+          companyMenu->setSuffixText("No prior associated company was found. Creating new company...");
+          companyMenu->addCollection("Enter VAT number");
+          companyMenu->addCollection("Enter volume discount");
+
+          companyMenu->setHandler([this, customer](const std::vector<std::string>& companyInputs) {
+            try {
+              // Validate inputs
+              if (companyInputs[0].empty() || companyInputs[1].empty()) {
+                throw std::invalid_argument("VAT and volume discount must be provided.");
+              }
+
+              // Create a new company with the provided details
+              const auto newCompany = std::make_shared<Company>(companyInputs[0], std::stoi(companyInputs[1]));
+
+              // Add the new company to the system (assuming you have a collection of companies)
+              this->companies.push_back(newCompany);
+
+              // Assign the new company's UUID to the customer
+              customer->setCompanyUUID(newCompany->getUUID());
+
+              std::cout << "\033[1;32mCustomer edited and company created successfully!\033[0m\n\n";
+              initMenu(); // Return to the main menu after company creation
+            } catch (const std::exception& e) {
+              std::cout << "\033[1;31mError: " << e.what() << "\033[0m\n\n";
+            }
+          });
+
+          // Show the company creation menu
+          companyMenu->display();
+          return;
+        } else {
+          // If company exists, update VAT and volume discount
+          company->setVat(inputs[4].empty() ? company->getVat() : inputs[4]);
+          company->setVolumeDiscount(inputs[5].empty() ? company->getVolumeDiscount() : std::stoi(inputs[5]));
+        }
+      }
+
+      std::cout << "\033[1;32mCustomer edited successfully!\033[0m\n\n";
+      initMenu();
+    } catch (const std::exception& e) {
+      std::cout << "\033[1;31mError: " << e.what() << "\033[0m\n\n";
+    }
+  });
+
+  return _menu;
+}
+
+
 std::shared_ptr<SequentialMenu> Program::createAddCustomerMenu() {
   const auto _menu = std::make_shared<SequentialMenu>("Add new customer");
   _menu->addCollection("Enter the first name");
   _menu->addCollection("Enter the last name");
   _menu->addCollection("Enter the address");
   _menu->addCollection("Is business customer? (y/n)");
+  // Can't do if business because that variable isn't made yet.
   _menu->addCollection("Enter the VAT number (ignored if not a business customer)");
   _menu->addCollection("Enter volume discount (E.g. 10 = 10%, no decimals) (ignored if not a business customer)");
 
@@ -598,6 +698,11 @@ std::function<void()> Program::createCustomerOptionHandler(const std::shared_ptr
     inspectMenu->addOption("Create invoice",
                            [this, customer] {
                              createAddInvoiceMenu(customer);
+                           });
+    inspectMenu->addOption("Edit customer",
+                           [this, customer] {
+                             createEditCustomerMenu(customer)->display();
+                             initMenu();
                            });
     if (permissionLevel == ADMIN) {
       inspectMenu->addOption("Remove Customer",

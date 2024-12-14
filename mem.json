@@ -54,7 +54,7 @@
         {
             "CompanyUUID": "N/A",
             "UUID": "b24f4287-fb9e-4fda-8604-ee4feece83bb",
-            "address": "505 Pine Ct",
+            "address": "404 Pine Ct",
             "business": false,
             "firstName": "Hannah",
             "lastName": "Blue"
@@ -434,7 +434,7 @@
             "name": "CarbonXtreme C800",
             "priceBusiness": 53000,
             "priceIndividual": 55000,
-            "stockCount": 2,
+            "stockCount": 12,
             "type": "rim",
             "width": 9.0
         },
@@ -460,7 +460,7 @@
             "name": "OffRoad Master OR900",
             "priceBusiness": 34000,
             "priceIndividual": 35000,
-            "stockCount": 7,
+            "stockCount": 17,
             "type": "rim",
             "width": 10.0
         }
