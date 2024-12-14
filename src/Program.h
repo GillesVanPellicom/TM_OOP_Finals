@@ -85,57 +85,63 @@ class Program {
     std::shared_ptr<SequentialMenu> createStockFilterByQueryMenu(const std::shared_ptr<Menu>& parent);
     static std::shared_ptr<SequentialMenu> createChangeStockMenu(const std::shared_ptr<Product>& product);
     std::shared_ptr<SequentialMenu> createEditCustomerMenu(const std::shared_ptr<Customer>& customer);
+    std::shared_ptr<SequentialMenu> createEditStockMenu(const std::shared_ptr<Product>& p);
+      /**
+       * @brief Helper function used to locate a Product by UUID
+       * @param uuid UUID from the Product object to be located
+       * @return shared_ptr to an object of type Product
+       */
+      [[nodiscard]] std::shared_ptr<Product> getProductByUUID(const UUIDGen::UUID& uuid);
 
 
-    /**
-     * @brief Helper function used to locate a Product by UUID
-     * @param uuid UUID from the Product object to be located
-     * @return shared_ptr to an object of type Product
-     */
-    [[nodiscard]] std::shared_ptr<Product> getProductByUUID(const UUIDGen::UUID& uuid);
+      /**
+      * @brief Helper function used to locate a Company by UUID
+      * @param uuid UUID from the Company object to be located
+      * @return shared_ptr to an object of type Company
+      */
+      [[nodiscard]] std::shared_ptr<Company> getCompanyByUUID(const UUIDGen::UUID& uuid);
 
 
-    /**
-    * @brief Helper function used to locate a Company by UUID
-    * @param uuid UUID from the Company object to be located
-    * @return shared_ptr to an object of type Company
-    */
-    [[nodiscard]] std::shared_ptr<Company> getCompanyByUUID(const UUIDGen::UUID& uuid);
+      /**
+      * @brief Deserializes a JSON collection into a vector of shared pointers to type T.
+      *
+      * @param j The JSON object containing the data.
+      * @param key The key in the JSON object to retrieve the collection from.
+      * @param collection The vector to populate with deserialized elements.
+      * @tparam T The type of the elements in the collection.
+      */
+      template
+      <
+      typename T >
+
+      void deserializeCollection(const nlohmann::json& j,
+                                 const std::string& key,
+                                 std::vector<std::shared_ptr<T> >& collection);
 
 
-    /**
-    * @brief Deserializes a JSON collection into a vector of shared pointers to type T.
-    *
-    * @param j The JSON object containing the data.
-    * @param key The key in the JSON object to retrieve the collection from.
-    * @param collection The vector to populate with deserialized elements.
-    * @tparam T The type of the elements in the collection.
-    */
-    template<typename T>
-    void deserializeCollection(const nlohmann::json& j,
+      /**
+      * @brief Serializes a vector of shared pointers to type T into a JSON object.
+      * @note Object in collection must have a serialize() function which outputs a nlohmann JSON object.
+      * @param collection The vector of shared pointers to serialize.
+      * @param key The key to use in the JSON object.
+      * @param j The JSON object to populate with the serialized data.
+      * @tparam T The type of the elements in the collection.
+      */
+      template
+      <
+      typename T >
+
+      void serializeCollection(const std::vector<std::shared_ptr<T> >& collection,
                                const std::string& key,
-                               std::vector<std::shared_ptr<T> >& collection);
+                               nlohmann::json& j) const;
 
-
-    /**
-    * @brief Serializes a vector of shared pointers to type T into a JSON object.
-    * @note Object in collection must have a serialize() function which outputs a nlohmann JSON object.
-    * @param collection The vector of shared pointers to serialize.
-    * @param key The key to use in the JSON object.
-    * @param j The JSON object to populate with the serialized data.
-    * @tparam T The type of the elements in the collection.
-    */
-    template<typename T>
-    void serializeCollection(const std::vector<std::shared_ptr<T> >& collection,
-                             const std::string& key,
-                             nlohmann::json& j) const;
-
-  public:
-    /**
-    * @brief Handles full software initialization.
-    */
-    void init();
-};
+      public
+      :
+      /**
+      * @brief Handles full software initialization.
+      */
+      void init();
+    };
 
 
 #endif //PROGRAM_H

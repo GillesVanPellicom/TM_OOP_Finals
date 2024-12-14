@@ -448,6 +448,79 @@ std::shared_ptr<SequentialMenu> Program::createAddCustomerMenu() {
 }
 
 
+std::shared_ptr<SequentialMenu> Program::createEditStockMenu(const std::shared_ptr<Product>& p) {
+  const auto _menu = std::make_shared<SequentialMenu>("Edit Stock for Product");
+
+  // Display current product details and allow the user to edit stock-related info
+  _menu->addCollection("Edit the product name [" + p->getName() + "]");
+  _menu->addCollection("Edit the manufacturer [" + p->getManufacturer() + "]");
+  _menu->addCollection("Edit the stock count [" + std::to_string(p->getStockCount()) + "]");
+  _menu->addCollection("Edit the individual price (in cents) [" + std::to_string(p->getPriceIndividual()) + "]");
+  _menu->addCollection("Edit the business price (in cents) [" + std::to_string(p->getPriceBusiness()) + "]");
+  _menu->addCollection("Edit the diameter (in inches) [" + std::to_string(p->getDiameter()) + "]");
+
+  // Additional fields for Tire or Rim
+  if (auto tire = std::dynamic_pointer_cast<Tire>(p)) {
+    // Tire-specific fields
+    _menu->addCollection("Edit the width (in mm) [" + std::to_string(tire->getWidth()) + "]");
+    _menu->addCollection("Edit the height (in mm) [" + std::to_string(tire->getHeight()) + "]");
+    _menu->addCollection("Edit the speed index (a single character) [" + std::string(1, tire->getSpeedIndex()) + "]");
+  } else if (auto rim = std::dynamic_pointer_cast<Rim>(p)) {
+    // Rim-specific fields
+    _menu->addCollection("Edit the width (in mm) [" + std::to_string(rim->getWidth()) + "]");
+    _menu->addCollection("Edit the color [" + rim->getColor() + "]");
+    _menu->addCollection("Edit the material (steel or aluminium) [" + rim->getMaterialAsString() + "]");
+  }
+
+  // Set the handler to modify the stock and pricing information for the product
+  _menu->setHandler([this, p](const std::vector<std::string>& inputs) {
+    try {
+      // Update basic product information
+      p->setName(inputs[0].empty() ? p->getName() : inputs[0]);
+      p->setManufacturer(inputs[1].empty() ? p->getManufacturer() : inputs[1]);
+      p->setStockCount(inputs[2].empty() ? p->getStockCount() : std::stoul(inputs[2]));
+      p->setPriceIndividual(inputs[3].empty() ? p->getPriceIndividual() : std::stoull(inputs[3]));
+      p->setPriceBusiness(inputs[4].empty() ? p->getPriceBusiness() : std::stoull(inputs[4]));
+      p->setDiameter(inputs[5].empty() ? p->getDiameter() : std::stoul(inputs[5]));
+
+      // Handle tire-specific fields
+      if (const auto tire = std::dynamic_pointer_cast<Tire>(p)) {
+        tire->setWidth(inputs[6].empty() ? tire->getWidth() : std::stoul(inputs[6]));
+        tire->setHeight(inputs[7].empty() ? tire->getHeight() : std::stoul(inputs[7]));
+        tire->setSpeedIndex(inputs[8].empty() ? tire->getSpeedIndex() : inputs[8][0]);
+      }
+
+      // Handle rim-specific fields
+      else if (const auto rim = std::dynamic_pointer_cast<Rim>(p)) {
+        rim->setWidth(inputs[6].empty() ? rim->getWidth() : std::stof(inputs[6]));
+        rim->setColor(inputs[7].empty() ? rim->getColor() : inputs[7]);
+
+        // Transform the material input to lowercase
+        std::string materialInput = inputs[8];
+        std::ranges::transform(materialInput, materialInput.begin(), ::tolower);
+
+        // Compare the lowercase input with the possible materials
+        if (materialInput == "aluminium") {
+          rim->setMaterial(RimMaterial::ALUMINIUM);
+        } else if (materialInput == "steel") {
+          rim->setMaterial(RimMaterial::STEEL);
+        } else if (!materialInput.empty()) {
+          throw std::invalid_argument("Invalid material type. Please use 'aluminium' or 'steel'.");
+        }
+      }
+
+      std::cout << "\033[1;32mProduct updated successfully!\033[0m\n";
+      initMenu();
+    } catch (const std::exception& e) {
+      std::cout << "\033[1;31mError: " << e.what() << "\033[0m\n";
+      Menu::waitForAnyKey(false);
+    }
+  });
+
+  return _menu;
+}
+
+
 std::shared_ptr<ChoiceMenu> Program::createAddStockMenu() {
   const auto tireMenu = std::make_shared<SequentialMenu>("Add new tire");
   tireMenu->addCollection("Enter the tire name");
@@ -816,6 +889,11 @@ std::function<void()> Program::createProductOptionHandler(const std::shared_ptr<
     const auto inspectMenu = std::make_shared<ChoiceMenu>("Inspect Product", nullptr);
     inspectMenu->init();
     inspectMenu->addOption("Add stock", changeStockMenu);
+    inspectMenu->addOption("Edit Product",
+                           [this, product]() {
+                             createEditStockMenu(product)->display();
+                             initMenu();
+                           });
     if (permissionLevel == ADMIN) {
       inspectMenu->addOption("Remove Product",
                              [this, product]() {
