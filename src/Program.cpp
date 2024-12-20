@@ -712,7 +712,7 @@ std::shared_ptr<SequentialMenu> Program::createCustomerFilterByQueryMenu(const s
     std::ranges::transform(query.begin(), query.end(), query.begin(), ::tolower);
 
     // Initialize ChoiceMenu safely.
-    const auto filteredFullCustomerMenu = std::make_shared<ChoiceMenu>("Filtered Stock Menu");
+    const auto filteredFullCustomerMenu = std::make_shared<ChoiceMenu>("Filtered Customers Menu");
     filteredFullCustomerMenu->init();
     if (!filteredFullCustomerMenu) {
       std::cerr << "Failed to create filtered stock menu!" << std::endl;

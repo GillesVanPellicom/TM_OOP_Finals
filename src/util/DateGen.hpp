@@ -13,6 +13,8 @@
  * This function uses the system clock to obtain the current date and time,
  * formats it as "YYYY-MM-DD HH:MM:SS", and returns the formatted string.
  *
+ * SOURCE: ChatGPT
+ *
  * @return A string containing the current date and time in the format "YYYY-MM-DD HH:MM:SS".
  */
 inline std::string getCurrentDateTime() {

@@ -25,7 +25,12 @@ void Invoice::calculatePrice() {
   unsigned int rimQty = 0;
 
   // For all purchases
-  for (const auto& [id, qty, type, name, price] : purchaseList) {
+  for (const auto& [
+         id,
+         qty,
+         type,
+         name,
+         price] : purchaseList) {
     noDiscountPrice += qty * price; // Fix: Include quantity in the subtotal
 
     if (type == TIRE) {
@@ -122,11 +127,11 @@ nlohmann::json Invoice::serialize() const {
   // Serialize the purchase list
   for (const auto& purchase : purchaseList) {
     j["purchaseList"].push_back({
-        {"productID", std::get<0>(purchase)},
-        {"qty", std::get<1>(purchase)},
-        {"productType", static_cast<int>(std::get<2>(purchase))},
-        {"name", std::get<3>(purchase)},
-        {"price", std::get<4>(purchase)}
+      {"productID", std::get<0>(purchase)},
+      {"qty", std::get<1>(purchase)},
+      {"productType", static_cast<int>(std::get<2>(purchase))},
+      {"name", std::get<3>(purchase)},
+      {"price", std::get<4>(purchase)}
     });
   }
 
@@ -149,11 +154,11 @@ void Invoice::deserialize(const nlohmann::json& j) {
   purchaseList.clear();
   for (const auto& purchase : j.at("purchaseList")) {
     purchaseList.emplace_back(
-        purchase.at("productID").get<std::string>(),
-        purchase.at("qty").get<uint32_t>(),
-        static_cast<ProductType>(purchase.at("productType").get<int>()),
-        purchase.at("name").get<std::string>(),
-        purchase.at("price").get<std::uint64_t>()
+      purchase.at("productID").get<std::string>(),
+      purchase.at("qty").get<uint32_t>(),
+      static_cast<ProductType>(purchase.at("productType").get<int>()),
+      purchase.at("name").get<std::string>(),
+      purchase.at("price").get<std::uint64_t>()
     );
   }
 }
