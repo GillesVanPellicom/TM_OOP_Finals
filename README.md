@@ -22,12 +22,13 @@ cmake --build ./cmake-build-debug --target all -j256
 - **Arch 2024.04.01 (WSL):** GCC 13.3 (C++23), CMake 3.26
 
 ## Validated with
-### Arch
-- **Valgrind 3.24.0:** Arch 2024.04.01 (WSL)
-- **ASAN:** Arch 2024.04.01 (WSL)
-- **UBSAN:** Arch 2024.04.01 (WSL)
-- **LSAN:** Arch 2024.04.01 (WSL)
-### macOS
-- **ASAN:** macOS 15.1.1
-- **UBSAN:** macOS 15.1.1
+### Arch 2024.04.01 (WSL)
+- **Valgrind** 3.24.0 
+- **ASAN** 1600.0.26.4
+- **UBSAN** 1600.0.26.4
+- **LSAN** 1600.0.26.4
+### macOS 15.1.1
+- **ASAN** 13.3
+- **UBSAN** 13.3
+- **IKOS** v3.4
 
