@@ -31,4 +31,8 @@ cmake --build ./cmake-build-debug --target all -j256
 - **ASAN** 13.3
 - **UBSAN** 13.3
 - **IKOS** v3.4
+- **Coverty** 2024.12.0
+- **Klocwork** 2024.4
+- **Cppcheck** 2.16.0
+  
 
