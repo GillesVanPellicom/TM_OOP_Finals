@@ -32,6 +32,14 @@ class ChoiceMenu final : public Menu {
     // ║              Attributes                ║
     // ╚════════════════════════════════════════╝
 
+    /**
+      * @brief Data-structure used to keep track of menu option to action relations
+      */
+  struct MenuEntry {
+    std::string description;
+    std::function<void()> action;
+  };
+
     std::map<int, MenuEntry> options;
     int optionCount = 1;
     bool shouldExit = false;

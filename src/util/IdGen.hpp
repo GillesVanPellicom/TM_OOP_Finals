@@ -33,7 +33,7 @@ class UUIDGen {
       // Seed random number generator
       static std::random_device rd;
       static std::mt19937 gen(rd()); // Standard random number generator
-      static std::uniform_int_distribution<int> dist(0, 255); // Generate bytes in [0, 255]
+      static std::uniform_int_distribution<uint8_t> dist(0, 255); // Generate bytes in [0, 255]
 
       // Generate 16 random bytes for the UUID
       std::array<uint8_t, 16> uuid{};

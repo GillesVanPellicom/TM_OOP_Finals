@@ -37,16 +37,8 @@ class Menu : public std::enable_shared_from_this<Menu> {
     std::weak_ptr<Menu> parentMenu;
     std::string suffixText;
 
+
   public:
-    /**
-     * @brief Data-structure used to keep track of menu option to action relations
-     */
-    struct MenuEntry {
-      std::string description;
-      std::function<void()> action;
-    };
-
-
     // ╔════════════════════════════════════════╗
     // ║            Public Methods              ║
     // ╚════════════════════════════════════════╝

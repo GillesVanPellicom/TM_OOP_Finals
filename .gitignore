@@ -1,3 +1,5 @@
 /cmake-build-debug/
 cmake-build-debug/
 /docs/generated/
+/build
+build/
